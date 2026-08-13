@@ -139,3 +139,42 @@ input[type="file"] {
         font-size: 13px;
     }
 }
+
+
+.favorite-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    margin-top: 30px;
+}
+
+.favorite-item {
+    padding: 20px;
+    background: #f8fafc;
+    border-radius: 18px;
+    transition: 0.2s;
+}
+
+.favorite-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.favorite-icon {
+    font-size: 45px;
+}
+
+.favorite-item h2 {
+    margin-top: 10px;
+    font-size: 20px;
+}
+
+.favorite-item p {
+    font-size: 15px;
+}
+
+@media (max-width: 600px) {
+    .favorite-grid {
+        grid-template-columns: 1fr;
+    }
+}
