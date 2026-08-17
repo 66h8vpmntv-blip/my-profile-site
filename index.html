@@ -2,14 +2,20 @@
 <html lang="ja">
 
 <head>
-<meta charset="UTF-8">
 
-<meta name="viewport"
-      content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
 
-<title>MY PROFILE</title>
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
-<link rel="stylesheet" href="style.css">
+    <title>MY PROFILE</title>
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
 
 </head>
 
@@ -18,24 +24,51 @@
 
 
 <!-- =========================
-     上部メニュー
+     三本線メニュー
 ========================= -->
 
-<header>
+<div class="menu-container">
 
-  <a href="profile.html">
-    PROFILE
-  </a>
+    <button
+        class="menu-button"
+        id="menuButton"
+        aria-label="メニュー"
+        onclick="toggleMenu()"
+    >
 
-  <a href="favorite.html">
-    FAVORITE
-  </a>
+        <span></span>
+        <span></span>
+        <span></span>
 
-  <a href="game.html">
-    🎮 GAME
-  </a>
+    </button>
 
-</header>
+
+    <!-- メニュー -->
+
+    <nav
+        class="side-menu"
+        id="sideMenu"
+    >
+
+        <a href="index.html">
+            HOME
+        </a>
+
+        <a href="profile.html">
+            PROFILE
+        </a>
+
+        <a href="favorite.html">
+            FAVORITE
+        </a>
+
+        <a href="game.html">
+            🎮 GAME
+        </a>
+
+    </nav>
+
+</div>
 
 
 <!-- =========================
@@ -44,88 +77,66 @@
 
 <main>
 
-  <!-- Google風タイトル -->
 
-  <div class="logo">
+    <!-- Google風タイトル -->
 
-    <span class="blue">M</span>
-    <span class="red">Y</span>
+    <div class="logo">
 
-    <span class="yellow"> </span>
+        <span class="blue">M</span>
+        <span class="red">Y</span>
 
-    <span class="blue">P</span>
-    <span class="green">R</span>
-    <span class="red">O</span>
-    <span class="yellow">F</span>
-    <span class="blue">I</span>
-    <span class="green">L</span>
-    <span class="red">E</span>
+        <span class="yellow"> </span>
 
-  </div>
-
-
-  <!-- =========================
-       検索
-  ========================= -->
-
-  <div class="search-area">
-
-    <div class="search-box">
-
-      <span class="search-icon">
-        🔍
-      </span>
-
-      <input
-        id="searchInput"
-        type="text"
-        placeholder="Search"
-        autocomplete="off"
-      >
+        <span class="blue">P</span>
+        <span class="green">R</span>
+        <span class="red">O</span>
+        <span class="yellow">F</span>
+        <span class="blue">I</span>
+        <span class="green">L</span>
+        <span class="red">E</span>
 
     </div>
 
 
-    <div class="buttons">
+    <!-- =========================
+         検索
+    ========================= -->
 
-      <button onclick="googleSearch()">
-        Google Search
-      </button>
+    <div class="search-area">
 
-      <a href="game.html">
-        🎮 GAME
-      </a>
+        <div class="search-box">
+
+            <span class="search-icon">
+                🔍
+            </span>
+
+            <input
+                id="searchInput"
+                type="text"
+                placeholder="Search"
+                autocomplete="off"
+            >
+
+        </div>
+
+
+        <div class="buttons">
+
+            <button
+                onclick="googleSearch()"
+            >
+                Google Search
+            </button>
+
+            <a href="game.html">
+                🎮 GAME
+            </a>
+
+        </div>
 
     </div>
-
-  </div>
 
 </main>
-
-
-<!-- =========================
-     フッター
-========================= -->
-
-<footer>
-
-  <a href="index.html">
-    HOME
-  </a>
-
-  <a href="profile.html">
-    PROFILE
-  </a>
-
-  <a href="favorite.html">
-    FAVORITE
-  </a>
-
-  <a href="game.html">
-    🎮 GAME
-  </a>
-
-</footer>
 
 
 <!-- =========================
@@ -134,120 +145,151 @@
 
 <script>
 
-function googleSearch() {
 
-  const text =
-    document
-      .getElementById("searchInput")
-      .value
-      .trim();
+/* =========================
+   メニュー開閉
+========================= */
 
+function toggleMenu() {
 
-  // 空欄なら何もしない
+    const menu =
+        document.getElementById(
+            "sideMenu"
+        );
 
-  if (text === "") {
-    return;
-  }
-
-
-  // 大文字・小文字を区別しない
-
-  const search =
-    text.toLowerCase();
+    const button =
+        document.getElementById(
+            "menuButton"
+        );
 
 
-  /* =========================
-     サイト内検索
-  ========================= */
+    menu.classList.toggle("open");
 
-
-  // PROFILE
-
-  if (
-    search === "profile" ||
-    search === "プロフィール"
-  ) {
-
-    window.location.href =
-      "profile.html";
-
-    return;
-  }
-
-
-  // FAVORITE
-
-  if (
-    search === "favorite" ||
-    search === "お気に入り" ||
-    search === "お気に入りページ"
-  ) {
-
-    window.location.href =
-      "favorite.html";
-
-    return;
-  }
-
-
-  // GAME
-
-  if (
-    search === "game" ||
-    search === "ゲーム"
-  ) {
-
-    window.location.href =
-      "game.html";
-
-    return;
-  }
-
-
-  // HOME
-
-  if (
-    search === "home" ||
-    search === "ホーム"
-  ) {
-
-    window.location.href =
-      "index.html";
-
-    return;
-  }
-
-
-  /* =========================
-     その他はGoogle検索
-  ========================= */
-
-  window.location.href =
-    "https://www.google.com/search?q="
-    +
-    encodeURIComponent(text);
+    button.classList.toggle("open");
 
 }
 
 
 /* =========================
-   Enterキーでも検索
+   検索
+========================= */
+
+function googleSearch() {
+
+    const text =
+        document
+            .getElementById(
+                "searchInput"
+            )
+            .value
+            .trim();
+
+
+    if (text === "") {
+
+        return;
+
+    }
+
+
+    const search =
+        text.toLowerCase();
+
+
+    /* PROFILE */
+
+    if (
+        search === "profile" ||
+        search === "プロフィール"
+    ) {
+
+        window.location.href =
+            "profile.html";
+
+        return;
+
+    }
+
+
+    /* FAVORITE */
+
+    if (
+        search === "favorite" ||
+        search === "お気に入り" ||
+        search === "お気に入りページ"
+    ) {
+
+        window.location.href =
+            "favorite.html";
+
+        return;
+
+    }
+
+
+    /* GAME */
+
+    if (
+        search === "game" ||
+        search === "ゲーム"
+    ) {
+
+        window.location.href =
+            "game.html";
+
+        return;
+
+    }
+
+
+    /* HOME */
+
+    if (
+        search === "home" ||
+        search === "ホーム"
+    ) {
+
+        window.location.href =
+            "index.html";
+
+        return;
+
+    }
+
+
+    /* その他はGoogle検索 */
+
+    window.location.href =
+        "https://www.google.com/search?q="
+        +
+        encodeURIComponent(text);
+
+}
+
+
+/* =========================
+   Enterキー
 ========================= */
 
 document
-  .getElementById("searchInput")
-  .addEventListener(
-    "keydown",
-    function(event) {
+    .getElementById(
+        "searchInput"
+    )
+    .addEventListener(
+        "keydown",
+        function(event) {
 
-      if (event.key === "Enter") {
+            if (
+                event.key === "Enter"
+            ) {
 
-        googleSearch();
+                googleSearch();
 
-      }
+            }
 
-    }
-  );
+        }
+    );
+
 
 </script>
 
