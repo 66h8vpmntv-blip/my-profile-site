@@ -101,13 +101,25 @@ const player = {
 };
 
 
-// 地面
-const ground = {
-  x: 0,
-  y: 0,
-  width: 0,
-  height: 50
-};
+// ステージの足場
+let platforms = [];
+
+
+// ステージ1の足場
+const stage1Platforms = [
+  { x: 0, y: 0, width: 220, height: 50 },
+  { x: 320, y: 0, width: 180, height: 50 },
+  { x: 600, y: 0, width: 250, height: 50 }
+];
+
+
+// ステージ2の足場
+const stage2Platforms = [
+  { x: 0, y: 0, width: 170, height: 50 },
+  { x: 270, y: 0, width: 140, height: 50 },
+  { x: 500, y: 0, width: 130, height: 50 },
+  { x: 720, y: 0, width: 200, height: 50 }
+];
 
 
 // 敵
@@ -132,25 +144,21 @@ const goal = {
 // コイン
 let coins = [];
 
-
-// ステージ1
 const stage1Coins = [
-  { x: 220, y: 250 },
+  { x: 150, y: 250 },
   { x: 350, y: 180 },
-  { x: 480, y: 250 },
-  { x: 620, y: 170 },
-  { x: 760, y: 250 }
+  { x: 470, y: 250 },
+  { x: 650, y: 180 },
+  { x: 780, y: 250 }
 ];
 
-
-// ステージ2
 const stage2Coins = [
-  { x: 180, y: 180 },
-  { x: 320, y: 250 },
-  { x: 450, y: 150 },
-  { x: 590, y: 230 },
-  { x: 730, y: 130 },
-  { x: 850, y: 250 }
+  { x: 100, y: 180 },
+  { x: 300, y: 220 },
+  { x: 430, y: 140 },
+  { x: 550, y: 200 },
+  { x: 750, y: 150 },
+  { x: 850, y: 230 }
 ];
 
 
@@ -166,16 +174,32 @@ function resize() {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight * 0.7;
 
-  ground.y = canvas.height - 50;
-  ground.width = canvas.width;
+  setupPlatforms();
 
   goal.x = canvas.width - 70;
-  goal.y = ground.y - goal.height;
+  goal.y = canvas.height - 50 - goal.height;
 }
 
 resize();
 
 window.addEventListener("resize", resize);
+
+
+// 足場を画面サイズに合わせる
+function setupPlatforms() {
+
+  const source =
+    stage === 1
+    ? stage1Platforms
+    : stage2Platforms;
+
+  platforms = source.map(p => ({
+    x: p.x,
+    y: canvas.height - 50,
+    width: p.width,
+    height: p.height
+  }));
+}
 
 
 // 当たり判定
@@ -187,11 +211,10 @@ function collision(a, b) {
     a.y < b.y + b.height &&
     a.y + a.height > b.y
   );
-
 }
 
 
-// ステージを読み込む
+// ステージ読み込み
 function loadStage() {
 
   player.x = 80;
@@ -200,29 +223,29 @@ function loadStage() {
   player.vy = 0;
 
   enemy.x = stage === 1 ? 500 : 450;
-
   enemy.vx = stage === 1 ? 2.5 : 4;
 
   coinCount = 0;
 
   stageClear = false;
-
   gameOver = false;
+
+  setupPlatforms();
 
   if (stage === 1) {
 
-    coins = stage1Coins.map(coin => ({
-      x: coin.x,
-      y: coin.y,
+    coins = stage1Coins.map(c => ({
+      x: c.x,
+      y: c.y,
       size: 22,
       taken: false
     }));
 
   } else {
 
-    coins = stage2Coins.map(coin => ({
-      x: coin.x,
-      y: coin.y,
+    coins = stage2Coins.map(c => ({
+      x: c.x,
+      y: c.y,
       size: 22,
       taken: false
     }));
@@ -242,7 +265,6 @@ function jump() {
   ) {
 
     player.vy = -player.jumpPower;
-
     player.grounded = false;
   }
 }
@@ -254,35 +276,23 @@ function setupButton(id, key) {
   const button = document.getElementById(id);
 
   button.addEventListener("touchstart", e => {
-
     e.preventDefault();
-
     keys[key] = true;
-
   });
 
   button.addEventListener("touchend", e => {
-
     e.preventDefault();
-
     keys[key] = false;
-
   });
 
   button.addEventListener("mousedown", e => {
-
     e.preventDefault();
-
     keys[key] = true;
-
   });
 
   button.addEventListener("mouseup", e => {
-
     e.preventDefault();
-
     keys[key] = false;
-
   });
 }
 
@@ -291,20 +301,13 @@ setupButton("right", "right");
 
 
 document.getElementById("jump").addEventListener("touchstart", e => {
-
   e.preventDefault();
-
   jump();
-
 });
 
-
 document.getElementById("jump").addEventListener("mousedown", e => {
-
   e.preventDefault();
-
   jump();
-
 });
 
 
@@ -322,7 +325,6 @@ window.addEventListener("keydown", e => {
   if (e.key === "ArrowUp" || e.key === " ") {
     jump();
   }
-
 });
 
 
@@ -335,7 +337,6 @@ window.addEventListener("keyup", e => {
   if (e.key === "ArrowRight") {
     keys.right = false;
   }
-
 });
 
 
@@ -359,6 +360,22 @@ function clearStage() {
     }
 
   }, 1500);
+}
+
+
+// 穴に落ちたとき
+function fallDown() {
+
+  hp--;
+
+  player.x = 80;
+  player.y = 100;
+  player.vx = 0;
+  player.vy = 0;
+
+  if (hp <= 0) {
+    gameOver = true;
+  }
 }
 
 
@@ -386,9 +403,7 @@ function update() {
   } else {
 
     player.vx = 0;
-
   }
-
 
   player.x += player.vx;
 
@@ -396,38 +411,56 @@ function update() {
   // 重力
   player.vy += gravity;
 
+  const oldY = player.y;
+
   player.y += player.vy;
 
+  player.grounded = false;
 
-  // 地面
-  if (player.y + player.height >= ground.y) {
 
-    player.y = ground.y - player.height;
+  // 足場との衝突
+  for (const platform of platforms) {
 
-    player.vy = 0;
+    if (
+      player.x + player.width > platform.x &&
+      player.x < platform.x + platform.width &&
+      oldY + player.height <= platform.y &&
+      player.y + player.height >= platform.y &&
+      player.vy >= 0
+    ) {
 
-    player.grounded = true;
+      player.y = platform.y - player.height;
+
+      player.vy = 0;
+
+      player.grounded = true;
+
+    }
+  }
+
+
+  // 穴に落ちた
+  if (player.y > canvas.height + 50) {
+
+    fallDown();
 
   }
 
 
-  // 画面端
+  // 左端
   if (player.x < 0) {
-
     player.x = 0;
-
   }
 
+
+  // 右端
   if (player.x + player.width > canvas.width) {
-
     player.x = canvas.width - player.width;
-
   }
 
 
   // 敵
   enemy.x += enemy.vx;
-
 
   if (
     enemy.x < 100 ||
@@ -449,13 +482,9 @@ function update() {
 
     enemy.x = stage === 1 ? 500 : 450;
 
-
     if (hp <= 0) {
-
       gameOver = true;
-
     }
-
   }
 
 
@@ -465,25 +494,19 @@ function update() {
     if (!coin.taken) {
 
       const coinBox = {
-
         x: coin.x,
         y: coin.y,
         width: coin.size,
         height: coin.size
-
       };
-
 
       if (collision(player, coinBox)) {
 
         coin.taken = true;
-
         coinCount++;
 
       }
-
     }
-
   }
 
 
@@ -508,16 +531,11 @@ function draw() {
   );
 
 
-  // ステージによって背景を変更
-  if (stage === 1) {
-
-    ctx.fillStyle = "#74c0fc";
-
-  } else {
-
-    ctx.fillStyle = "#b197fc";
-
-  }
+  // 背景
+  ctx.fillStyle =
+    stage === 1
+    ? "#74c0fc"
+    : "#b197fc";
 
   ctx.fillRect(
     0,
@@ -527,15 +545,28 @@ function draw() {
   );
 
 
-  // 地面
-  ctx.fillStyle = "#40c057";
+  // 足場
+  for (const platform of platforms) {
 
-  ctx.fillRect(
-    ground.x,
-    ground.y,
-    ground.width,
-    ground.height
-  );
+    ctx.fillStyle = "#40c057";
+
+    ctx.fillRect(
+      platform.x,
+      platform.y,
+      platform.width,
+      platform.height
+    );
+
+    // 土の部分
+    ctx.fillStyle = "#8d5524";
+
+    ctx.fillRect(
+      platform.x,
+      platform.y + 15,
+      platform.width,
+      platform.height - 15
+    );
+  }
 
 
   // コイン
@@ -562,9 +593,7 @@ function draw() {
       ctx.lineWidth = 3;
 
       ctx.stroke();
-
     }
-
   }
 
 
@@ -577,7 +606,6 @@ function draw() {
     8,
     goal.height
   );
-
 
   ctx.fillStyle = "#ff6b6b";
 
@@ -616,7 +644,9 @@ function draw() {
 
   // 敵
   ctx.fillStyle =
-    stage === 1 ? "#7048e8" : "#c92a2a";
+    stage === 1
+    ? "#7048e8"
+    : "#c92a2a";
 
   ctx.fillRect(
     enemy.x,
@@ -648,10 +678,11 @@ function draw() {
   document.getElementById("info").textContent =
     "STAGE " + stage +
     "　❤️ HP: " + hp +
-    "　🪙 COIN: " + coinCount + "/" + coins.length;
+    "　🪙 COIN: " +
+    coinCount + "/" + coins.length;
 
 
-  // ステージクリア表示
+  // STAGE CLEAR
   if (stageClear) {
 
     ctx.fillStyle = "rgba(0,0,0,0.65)";
@@ -676,11 +707,10 @@ function draw() {
     );
 
     ctx.textAlign = "left";
-
   }
 
 
-  // ゲームオーバー
+  // GAME OVER
   if (gameOver) {
 
     ctx.fillStyle = "rgba(0,0,0,0.7)";
@@ -713,11 +743,10 @@ function draw() {
     );
 
     ctx.textAlign = "left";
-
   }
 
 
-  // 最終クリア
+  // ALL CLEAR
   if (finalClear) {
 
     ctx.fillStyle = "rgba(0,0,0,0.75)";
@@ -752,13 +781,12 @@ function draw() {
     );
 
     ctx.textAlign = "left";
-
   }
 
 }
 
 
-// ゲーム開始
+// 開始
 loadStage();
 
 
@@ -770,7 +798,6 @@ function gameLoop() {
   draw();
 
   requestAnimationFrame(gameLoop);
-
 }
 
 gameLoop();
