@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+
 <title>2D Action Game</title>
 
 <style>
@@ -23,6 +24,16 @@ body {
   width: 100vw;
   height: 70vh;
   background: linear-gradient(#74c0fc, #d0ebff);
+}
+
+#info {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  color: white;
+  font-size: 20px;
+  font-weight: bold;
+  z-index: 10;
 }
 
 #controls {
@@ -46,21 +57,12 @@ button {
 #jump {
   background: #e03131;
 }
-
-#info {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  color: white;
-  font-size: 20px;
-  font-weight: bold;
-}
 </style>
 </head>
 
 <body>
 
-<div id="info">SCORE: 0</div>
+<div id="info">❤️ HP: 3　SCORE: 0</div>
 
 <canvas id="game"></canvas>
 
@@ -71,16 +73,17 @@ button {
 </div>
 
 <script>
+
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
 
 function resize() {
   canvas.width = window.innerWidth;
   canvas.height = window.innerHeight * 0.7;
-}
 
-resize();
-window.addEventListener("resize", resize);
+  ground.y = canvas.height - 50;
+  ground.width = canvas.width;
+}
 
 const player = {
   x: 100,
@@ -94,75 +97,175 @@ const player = {
   grounded: false
 };
 
-const gravity = 0.6;
+const enemy = {
+  x: 500,
+  y: 100,
+  width: 45,
+  height: 45,
+  vx: 2.5
+};
 
 const ground = {
   x: 0,
-  y: canvas.height - 50,
-  width: canvas.width,
+  y: 0,
+  width: 0,
   height: 50
 };
 
+let hp = 3;
 let score = 0;
+let gameOver = false;
+
+const gravity = 0.6;
 
 const keys = {
   left: false,
   right: false
 };
 
+resize();
+
+window.addEventListener("resize", resize);
+
+
+// ジャンプ
 function jump() {
-  if (player.grounded) {
+
+  if (player.grounded && !gameOver) {
     player.vy = -player.jumpPower;
     player.grounded = false;
   }
 }
 
-document.getElementById("left").addEventListener("touchstart", e => {
-  e.preventDefault();
-  keys.left = true;
-});
 
-document.getElementById("left").addEventListener("touchend", e => {
-  e.preventDefault();
-  keys.left = false;
-});
+// ボタン操作
+function setupButton(id, key) {
 
-document.getElementById("right").addEventListener("touchstart", e => {
-  e.preventDefault();
-  keys.right = true;
-});
+  const button = document.getElementById(id);
 
-document.getElementById("right").addEventListener("touchend", e => {
-  e.preventDefault();
-  keys.right = false;
-});
+  button.addEventListener("touchstart", e => {
+    e.preventDefault();
+    keys[key] = true;
+  });
+
+  button.addEventListener("touchend", e => {
+    e.preventDefault();
+    keys[key] = false;
+  });
+
+  button.addEventListener("mousedown", e => {
+    e.preventDefault();
+    keys[key] = true;
+  });
+
+  button.addEventListener("mouseup", e => {
+    e.preventDefault();
+    keys[key] = false;
+  });
+}
+
+setupButton("left", "left");
+setupButton("right", "right");
 
 document.getElementById("jump").addEventListener("touchstart", e => {
   e.preventDefault();
   jump();
 });
 
+document.getElementById("jump").addEventListener("mousedown", e => {
+  e.preventDefault();
+  jump();
+});
+
+
+// キーボード操作
+window.addEventListener("keydown", e => {
+
+  if (e.key === "ArrowLeft") {
+    keys.left = true;
+  }
+
+  if (e.key === "ArrowRight") {
+    keys.right = true;
+  }
+
+  if (e.key === "ArrowUp" || e.key === " ") {
+    jump();
+  }
+
+});
+
+window.addEventListener("keyup", e => {
+
+  if (e.key === "ArrowLeft") {
+    keys.left = false;
+  }
+
+  if (e.key === "ArrowRight") {
+    keys.right = false;
+  }
+
+});
+
+
+// 当たり判定
+function collision(a, b) {
+
+  return (
+    a.x < b.x + b.width &&
+    a.x + a.width > b.x &&
+    a.y < b.y + b.height &&
+    a.y + a.height > b.y
+  );
+
+}
+
+
+// ゲームオーバー
+function endGame() {
+  gameOver = true;
+}
+
+
+// ゲーム更新
 function update() {
 
+  if (gameOver) {
+    return;
+  }
+
+
+  // プレイヤー移動
   if (keys.left) {
     player.vx = -player.speed;
-  } else if (keys.right) {
+  } 
+  else if (keys.right) {
     player.vx = player.speed;
-  } else {
+  } 
+  else {
     player.vx = 0;
   }
 
   player.x += player.vx;
 
+
+  // 重力
   player.vy += gravity;
   player.y += player.vy;
 
+
+  // 地面
   if (player.y + player.height >= ground.y) {
+
     player.y = ground.y - player.height;
+
     player.vy = 0;
+
     player.grounded = true;
   }
 
+
+  // 画面外に出ない
   if (player.x < 0) {
     player.x = 0;
   }
@@ -170,14 +273,48 @@ function update() {
   if (player.x + player.width > canvas.width) {
     player.x = canvas.width - player.width;
   }
+
+
+  // 敵の移動
+  enemy.x += enemy.vx;
+
+
+  if (enemy.x < 100 || enemy.x + enemy.width > canvas.width - 50) {
+    enemy.vx *= -1;
+  }
+
+
+  // 敵との衝突
+  if (collision(player, enemy)) {
+
+    hp--;
+
+    player.x = 100;
+    player.y = 100;
+
+    enemy.x = 500;
+
+    if (hp <= 0) {
+      endGame();
+    }
+  }
+
+
+  // スコア
+  score++;
+
 }
 
+
+// 描画
 function draw() {
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+
   // 地面
   ctx.fillStyle = "#40c057";
+
   ctx.fillRect(
     ground.x,
     ground.y,
@@ -185,8 +322,10 @@ function draw() {
     ground.height
   );
 
+
   // プレイヤー
   ctx.fillStyle = "#ff6b6b";
+
   ctx.fillRect(
     player.x,
     player.y,
@@ -194,17 +333,91 @@ function draw() {
     player.height
   );
 
+
+  // 敵
+  ctx.fillStyle = "#7048e8";
+
+  ctx.fillRect(
+    enemy.x,
+    enemy.y,
+    enemy.width,
+    enemy.height
+  );
+
+
+  // 敵の目
+  ctx.fillStyle = "white";
+
+  ctx.fillRect(
+    enemy.x + 8,
+    enemy.y + 10,
+    8,
+    8
+  );
+
+  ctx.fillRect(
+    enemy.x + 29,
+    enemy.y + 10,
+    8,
+    8
+  );
+
+
+  // HP・スコア
   document.getElementById("info").textContent =
-    "SCORE: " + score;
+    "❤️ HP: " + hp + "　SCORE: " + score;
+
+
+  // ゲームオーバー
+  if (gameOver) {
+
+    ctx.fillStyle = "rgba(0,0,0,0.7)";
+
+    ctx.fillRect(
+      0,
+      0,
+      canvas.width,
+      canvas.height
+    );
+
+    ctx.fillStyle = "white";
+
+    ctx.textAlign = "center";
+
+    ctx.font = "40px sans-serif";
+
+    ctx.fillText(
+      "GAME OVER",
+      canvas.width / 2,
+      canvas.height / 2
+    );
+
+    ctx.font = "20px sans-serif";
+
+    ctx.fillText(
+      "ページを再読み込みしてもう一度遊べます",
+      canvas.width / 2,
+      canvas.height / 2 + 45
+    );
+
+    ctx.textAlign = "left";
+  }
+
 }
 
+
+// ゲームループ
 function gameLoop() {
+
   update();
+
   draw();
+
   requestAnimationFrame(gameLoop);
 }
 
 gameLoop();
+
 </script>
 
 </body>
