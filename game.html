@@ -62,7 +62,7 @@ button {
 
 <body>
 
-<div id="info">❤️ HP: 3　SCORE: 0</div>
+<div id="info">❤️ HP: 3　🪙 COIN: 0</div>
 
 <canvas id="game"></canvas>
 
@@ -77,16 +77,8 @@ button {
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
 
-function resize() {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight * 0.7;
-
-  ground.y = canvas.height - 50;
-  ground.width = canvas.width;
-}
-
 const player = {
-  x: 100,
+  x: 80,
   y: 100,
   width: 40,
   height: 40,
@@ -112,8 +104,24 @@ const ground = {
   height: 50
 };
 
+const coins = [
+  { x: 250, y: 250, size: 22, taken: false },
+  { x: 380, y: 180, size: 22, taken: false },
+  { x: 520, y: 250, size: 22, taken: false },
+  { x: 680, y: 150, size: 22, taken: false },
+  { x: 820, y: 250, size: 22, taken: false }
+];
+
+const goal = {
+  x: 0,
+  y: 0,
+  width: 35,
+  height: 80
+};
+
 let hp = 3;
-let score = 0;
+let coinCount = 0;
+let gameClear = false;
 let gameOver = false;
 
 const gravity = 0.6;
@@ -123,22 +131,51 @@ const keys = {
   right: false
 };
 
+
+// 画面サイズ
+function resize() {
+
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight * 0.7;
+
+  ground.y = canvas.height - 50;
+  ground.width = canvas.width;
+
+  goal.x = canvas.width - 70;
+  goal.y = ground.y - goal.height;
+}
+
 resize();
 
 window.addEventListener("resize", resize);
 
 
+// 当たり判定
+function collision(a, b) {
+
+  return (
+    a.x < b.x + b.width &&
+    a.x + a.width > b.x &&
+    a.y < b.y + b.height &&
+    a.y + a.height > b.y
+  );
+
+}
+
+
 // ジャンプ
 function jump() {
 
-  if (player.grounded && !gameOver) {
+  if (player.grounded && !gameOver && !gameClear) {
+
     player.vy = -player.jumpPower;
+
     player.grounded = false;
   }
 }
 
 
-// ボタン操作
+// ボタン設定
 function setupButton(id, key) {
 
   const button = document.getElementById(id);
@@ -166,6 +203,7 @@ function setupButton(id, key) {
 
 setupButton("left", "left");
 setupButton("right", "right");
+
 
 document.getElementById("jump").addEventListener("touchstart", e => {
   e.preventDefault();
@@ -195,6 +233,7 @@ window.addEventListener("keydown", e => {
 
 });
 
+
 window.addEventListener("keyup", e => {
 
   if (e.key === "ArrowLeft") {
@@ -208,29 +247,10 @@ window.addEventListener("keyup", e => {
 });
 
 
-// 当たり判定
-function collision(a, b) {
-
-  return (
-    a.x < b.x + b.width &&
-    a.x + a.width > b.x &&
-    a.y < b.y + b.height &&
-    a.y + a.height > b.y
-  );
-
-}
-
-
-// ゲームオーバー
-function endGame() {
-  gameOver = true;
-}
-
-
 // ゲーム更新
 function update() {
 
-  if (gameOver) {
+  if (gameOver || gameClear) {
     return;
   }
 
@@ -238,10 +258,10 @@ function update() {
   // プレイヤー移動
   if (keys.left) {
     player.vx = -player.speed;
-  } 
+  }
   else if (keys.right) {
     player.vx = player.speed;
-  } 
+  }
   else {
     player.vx = 0;
   }
@@ -265,7 +285,7 @@ function update() {
   }
 
 
-  // 画面外に出ない
+  // 画面端
   if (player.x < 0) {
     player.x = 0;
   }
@@ -275,11 +295,13 @@ function update() {
   }
 
 
-  // 敵の移動
+  // 敵
   enemy.x += enemy.vx;
 
-
-  if (enemy.x < 100 || enemy.x + enemy.width > canvas.width - 50) {
+  if (
+    enemy.x < 100 ||
+    enemy.x + enemy.width > canvas.width - 100
+  ) {
     enemy.vx *= -1;
   }
 
@@ -289,19 +311,44 @@ function update() {
 
     hp--;
 
-    player.x = 100;
+    player.x = 80;
     player.y = 100;
 
     enemy.x = 500;
 
     if (hp <= 0) {
-      endGame();
+      gameOver = true;
     }
   }
 
 
-  // スコア
-  score++;
+  // コイン
+  for (const coin of coins) {
+
+    if (!coin.taken) {
+
+      const coinBox = {
+        x: coin.x,
+        y: coin.y,
+        width: coin.size,
+        height: coin.size
+      };
+
+      if (collision(player, coinBox)) {
+
+        coin.taken = true;
+
+        coinCount++;
+      }
+    }
+  }
+
+
+  // ゴール
+  if (collision(player, goal)) {
+
+    gameClear = true;
+  }
 
 }
 
@@ -309,7 +356,12 @@ function update() {
 // 描画
 function draw() {
 
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.clearRect(
+    0,
+    0,
+    canvas.width,
+    canvas.height
+  );
 
 
   // 地面
@@ -321,6 +373,68 @@ function draw() {
     ground.width,
     ground.height
   );
+
+
+  // コイン
+  for (const coin of coins) {
+
+    if (!coin.taken) {
+
+      ctx.beginPath();
+
+      ctx.arc(
+        coin.x + coin.size / 2,
+        coin.y + coin.size / 2,
+        coin.size / 2,
+        0,
+        Math.PI * 2
+      );
+
+      ctx.fillStyle = "#ffd43b";
+
+      ctx.fill();
+
+      ctx.strokeStyle = "#f08c00";
+
+      ctx.lineWidth = 3;
+
+      ctx.stroke();
+    }
+  }
+
+
+  // ゴールの旗
+  ctx.fillStyle = "#7950f2";
+
+  ctx.fillRect(
+    goal.x,
+    goal.y,
+    8,
+    goal.height
+  );
+
+  ctx.fillStyle = "#ff6b6b";
+
+  ctx.beginPath();
+
+  ctx.moveTo(
+    goal.x + 8,
+    goal.y
+  );
+
+  ctx.lineTo(
+    goal.x + 35,
+    goal.y + 18
+  );
+
+  ctx.lineTo(
+    goal.x + 8,
+    goal.y + 36
+  );
+
+  ctx.closePath();
+
+  ctx.fill();
 
 
   // プレイヤー
@@ -363,12 +477,13 @@ function draw() {
   );
 
 
-  // HP・スコア
+  // 情報
   document.getElementById("info").textContent =
-    "❤️ HP: " + hp + "　SCORE: " + score;
+    "❤️ HP: " + hp +
+    "　🪙 COIN: " + coinCount + "/5";
 
 
-  // ゲームオーバー
+  // GAME OVER
   if (gameOver) {
 
     ctx.fillStyle = "rgba(0,0,0,0.7)";
@@ -395,9 +510,47 @@ function draw() {
     ctx.font = "20px sans-serif";
 
     ctx.fillText(
-      "ページを再読み込みしてもう一度遊べます",
+      "ページを再読み込みしてください",
       canvas.width / 2,
       canvas.height / 2 + 45
+    );
+
+    ctx.textAlign = "left";
+  }
+
+
+  // CLEAR
+  if (gameClear) {
+
+    ctx.fillStyle = "rgba(0,0,0,0.7)";
+
+    ctx.fillRect(
+      0,
+      0,
+      canvas.width,
+      canvas.height
+    );
+
+    ctx.fillStyle = "#ffd43b";
+
+    ctx.textAlign = "center";
+
+    ctx.font = "50px sans-serif";
+
+    ctx.fillText(
+      "🎉 CLEAR!",
+      canvas.width / 2,
+      canvas.height / 2
+    );
+
+    ctx.fillStyle = "white";
+
+    ctx.font = "24px sans-serif";
+
+    ctx.fillText(
+      "コイン: " + coinCount + "/5",
+      canvas.width / 2,
+      canvas.height / 2 + 50
     );
 
     ctx.textAlign = "left";
