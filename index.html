@@ -459,12 +459,148 @@ function googleSearch() {
   }
 
 
+  // 小文字に変換して判定
+  const search =
+    text.toLowerCase();
+
+
+  // =========================
+  // サイト内検索
+  // =========================
+
+  if (
+    search === "profile"
+  ) {
+
+    window.location.href =
+      "profile.html";
+
+    return;
+
+  }
+
+
+  if (
+    search === "favorite"
+  ) {
+
+    window.location.href =
+      "favorite.html";
+
+    return;
+
+  }
+
+
+  if (
+    search === "game"
+  ) {
+
+    window.location.href =
+      "game.html";
+
+    return;
+
+  }
+
+
+  if (
+    search === "home"
+  ) {
+
+    window.location.href =
+      "index.html";
+
+    return;
+
+  }
+
+
+  // =========================
+  // 日本語でも検索できるようにする
+  // =========================
+
+  if (
+    search === "プロフィール"
+  ) {
+
+    window.location.href =
+      "profile.html";
+
+    return;
+
+  }
+
+
+  if (
+    search === "お気に入り" ||
+    search === "お気に入りページ"
+  ) {
+
+    window.location.href =
+      "favorite.html";
+
+    return;
+
+  }
+
+
+  if (
+    search === "ゲーム"
+  ) {
+
+    window.location.href =
+      "game.html";
+
+    return;
+
+  }
+
+
+  if (
+    search === "ホーム"
+  ) {
+
+    window.location.href =
+      "index.html";
+
+    return;
+
+  }
+
+
+  // =========================
+  // その他はGoogle検索
+  // =========================
+
   window.location.href =
     "https://www.google.com/search?q="
     +
     encodeURIComponent(text);
 
 }
+
+
+// =========================
+// Enterキーで検索
+// =========================
+
+document
+  .getElementById("searchInput")
+  .addEventListener(
+    "keydown",
+    function(event) {
+
+      if (
+        event.key === "Enter"
+      ) {
+
+        googleSearch();
+
+      }
+
+    }
+  );
 
 
 // Enterキーでも検索
