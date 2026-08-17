@@ -3,343 +3,328 @@
 
 <head>
 
-<meta charset="UTF-8">
+  <meta charset="UTF-8">
 
-<meta
-  name="viewport"
-  content="width=device-width, initial-scale=1.0"
->
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
 
-<title>MY PROFILE</title>
+  <title>MY PROFILE</title>
 
-<style>
 
-* {
-  box-sizing: border-box;
-}
+  <style>
 
-body {
+    * {
+      box-sizing: border-box;
+    }
 
-  margin: 0;
+    body {
+      margin: 0;
+      min-height: 100vh;
 
-  min-height: 100vh;
+      font-family:
+        Arial,
+        "Helvetica Neue",
+        sans-serif;
 
-  font-family:
-    Arial,
-    "Helvetica Neue",
-    sans-serif;
+      background: white;
+      color: #202124;
+    }
 
-  background: white;
 
-  color: #202124;
+    /* =========================
+       上部メニュー
+    ========================= */
 
-}
+    header {
+      height: 70px;
 
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
 
-/* =========================
-   上部メニュー
-========================= */
+      padding: 0 25px;
 
-header {
+      gap: 20px;
+    }
 
-  height: 70px;
+    header a {
+      color: #202124;
 
-  display: flex;
+      text-decoration: none;
 
-  justify-content: flex-end;
+      font-size: 14px;
+    }
 
-  align-items: center;
+    header a:hover {
+      text-decoration: underline;
+    }
 
-  padding: 0 25px;
 
-  gap: 20px;
+    /* =========================
+       HOME
+    ========================= */
 
-}
+    main {
+      min-height:
+        calc(100vh - 130px);
 
+      display: flex;
 
-header a {
+      flex-direction: column;
 
-  color: #202124;
+      align-items: center;
 
-  text-decoration: none;
+      justify-content: center;
 
-  font-size: 14px;
+      padding-bottom: 100px;
+    }
 
-}
 
+    /* =========================
+       Google風タイトル
+    ========================= */
 
-header a:hover {
+    .logo {
+      font-size: 64px;
 
-  text-decoration: underline;
+      font-weight: 600;
 
-}
+      letter-spacing: -4px;
 
+      margin-bottom: 30px;
 
-/* =========================
-   メイン
-========================= */
+      font-family:
+        Arial,
+        sans-serif;
+    }
 
-main {
+    .logo .blue {
+      color: #4285F4;
+    }
 
-  min-height:
-    calc(100vh - 130px);
+    .logo .red {
+      color: #EA4335;
+    }
 
-  display: flex;
+    .logo .yellow {
+      color: #FBBC05;
+    }
 
-  flex-direction: column;
+    .logo .green {
+      color: #34A853;
+    }
 
-  align-items: center;
 
-  justify-content: center;
+    /* =========================
+       検索エリア
+    ========================= */
 
-  padding-bottom: 100px;
+    .search-area {
+      width: min(
+        90vw,
+        580px
+      );
+    }
 
-}
 
+    /* =========================
+       検索ボックス
+    ========================= */
 
-/* =========================
-   ロゴ
-========================= */
+    .search-box {
+      width: 100%;
 
-.logo {
+      height: 48px;
 
-  font-size: 64px;
+      border:
+        1px solid #dfe1e5;
 
-  font-weight: 500;
+      border-radius: 24px;
 
-  letter-spacing: -3px;
+      display: flex;
 
-  margin-bottom: 30px;
+      align-items: center;
 
-}
+      padding: 0 18px;
 
+      background: white;
 
-/* =========================
-   検索ボックス
-========================= */
+      box-shadow:
+        0 1px 6px rgba(
+          32,
+          33,
+          36,
+          0.15
+        );
+    }
 
-.search-area {
+    .search-box:hover {
+      box-shadow:
+        0 1px 8px rgba(
+          32,
+          33,
+          36,
+          0.25
+        );
+    }
 
-  width: min(
-    90vw,
-    580px
-  );
 
-}
+    /* =========================
+       検索アイコン
+    ========================= */
 
+    .search-icon {
+      font-size: 18px;
 
-.search-box {
+      color: #777;
 
-  width: 100%;
+      margin-right: 10px;
+    }
 
-  height: 48px;
 
-  border: 1px solid #dfe1e5;
+    /* =========================
+       入力欄
+    ========================= */
 
-  border-radius: 24px;
+    #searchInput {
+      flex: 1;
 
-  display: flex;
+      border: none;
 
-  align-items: center;
+      outline: none;
 
-  padding: 0 18px;
+      font-size: 16px;
 
-  box-shadow:
-    0 1px 6px rgba(
-      32,
-      33,
-      36,
-      0.15
-    );
+      color: #202124;
 
-}
+      background: transparent;
+    }
 
+    #searchInput::placeholder {
+      color: #777;
+    }
 
-.search-box:hover {
 
-  box-shadow:
-    0 1px 8px rgba(
-      32,
-      33,
-      36,
-      0.25
-    );
+    /* =========================
+       ボタン
+    ========================= */
 
-}
+    .buttons {
+      display: flex;
 
+      justify-content: center;
 
-.search-icon {
+      gap: 12px;
 
-  font-size: 18px;
+      margin-top: 28px;
+    }
 
-  color: #777;
+    .buttons a,
+    .buttons button {
+      border:
+        1px solid #f8f9fa;
 
-  margin-right: 10px;
+      background: #f8f9fa;
 
-}
+      color: #202124;
 
+      padding:
+        10px 18px;
 
-#searchInput {
+      border-radius: 4px;
 
-  flex: 1;
+      font-size: 14px;
 
-  border: none;
+      text-decoration: none;
 
-  outline: none;
+      cursor: pointer;
+    }
 
-  font-size: 16px;
+    .buttons a:hover,
+    .buttons button:hover {
+      border:
+        1px solid #dadce0;
 
-  color: #202124;
+      box-shadow:
+        0 1px 1px
+        rgba(
+          0,
+          0,
+          0,
+          0.1
+        );
+    }
 
-}
 
+    /* =========================
+       フッター
+    ========================= */
 
-#searchInput::placeholder {
+    footer {
+      height: 60px;
 
-  color: #777;
+      background: #f2f2f2;
 
-}
+      display: flex;
 
+      align-items: center;
 
-/* =========================
-   ボタン
-========================= */
+      justify-content: center;
 
-.buttons {
+      gap: 25px;
 
-  display: flex;
+      border-top:
+        1px solid #dadce0;
+    }
 
-  justify-content: center;
+    footer a {
+      color: #5f6368;
 
-  gap: 12px;
+      text-decoration: none;
 
-  margin-top: 28px;
+      font-size: 14px;
+    }
 
-}
+    footer a:hover {
+      text-decoration: underline;
+    }
 
 
-.buttons a,
-.buttons button {
+    /* =========================
+       スマホ
+    ========================= */
 
-  border: 1px solid #f8f9fa;
+    @media (max-width: 600px) {
 
-  background: #f8f9fa;
+      .logo {
+        font-size: 48px;
 
-  color: #202124;
+        letter-spacing: -3px;
+      }
 
-  padding: 10px 18px;
+      header {
+        padding-right: 15px;
 
-  border-radius: 4px;
+        gap: 12px;
+      }
 
-  font-size: 14px;
+      header a {
+        font-size: 13px;
+      }
 
-  text-decoration: none;
+      .search-box {
+        height: 46px;
+      }
 
-  cursor: pointer;
+      footer {
+        gap: 15px;
+      }
 
-}
+    }
 
-
-.buttons a:hover,
-.buttons button:hover {
-
-  border:
-    1px solid #dadce0;
-
-  box-shadow:
-    0 1px 1px rgba(
-      0,
-      0,
-      0,
-      0.1
-    );
-
-}
-
-
-/* =========================
-   フッター
-========================= */
-
-footer {
-
-  height: 60px;
-
-  background: #f2f2f2;
-
-  display: flex;
-
-  align-items: center;
-
-  justify-content: center;
-
-  gap: 25px;
-
-  border-top:
-    1px solid #dadce0;
-
-}
-
-
-footer a {
-
-  color: #5f6368;
-
-  text-decoration: none;
-
-  font-size: 14px;
-
-}
-
-
-footer a:hover {
-
-  text-decoration: underline;
-
-}
-
-
-/* =========================
-   スマホ
-========================= */
-
-@media (max-width: 600px) {
-
-  .logo {
-
-    font-size: 48px;
-
-  }
-
-  header {
-
-    padding-right: 15px;
-
-    gap: 12px;
-
-  }
-
-  header a {
-
-    font-size: 13px;
-
-  }
-
-  .search-box {
-
-    height: 46px;
-
-  }
-
-  footer {
-
-    gap: 15px;
-
-  }
-
-}
-
-</style>
+  </style>
 
 </head>
 
@@ -347,284 +332,259 @@ footer a:hover {
 <body>
 
 
-<!-- =========================
-     メニュー
-========================= -->
+  <!-- =========================
+       上部メニュー
+  ========================= -->
 
-<header>
+  <header>
 
-  <a href="profile.html">
-    PROFILE
-  </a>
+    <a href="profile.html">
+      PROFILE
+    </a>
 
-  <a href="favorite.html">
-    FAVORITE
-  </a>
+    <a href="favorite.html">
+      FAVORITE
+    </a>
 
-  <a href="game.html">
-    🎮 GAME
-  </a>
+    <a href="game.html">
+      🎮 GAME
+    </a>
 
-</header>
-
-
-<!-- =========================
-     HOME
-========================= -->
-
-<main>
-
-  <div class="logo">
-  <span class="blue">M</span><span class="red">Y</span>
-  <span class="yellow"> </span>
-  <span class="blue">P</span><span class="green">R</span><span class="red">O</span><span class="yellow">F</span><span class="blue">I</span><span class="green">L</span><span class="red">E</span>
-</div>
+  </header>
 
 
-  <div class="search-area">
+  <!-- =========================
+       HOME
+  ========================= -->
 
-    <div class="search-box">
+  <main>
 
-      <span class="search-icon">
-        🔍
-      </span>
 
-      <input
-        id="searchInput"
-        type="text"
-        placeholder="Search"
-        autocomplete="off"
-      >
+    <!-- Google風タイトル -->
+
+    <div class="logo">
+
+      <span class="blue">M</span>
+      <span class="red">Y</span>
+
+      <span class="yellow"> </span>
+
+      <span class="blue">P</span>
+      <span class="green">R</span>
+      <span class="red">O</span>
+      <span class="yellow">F</span>
+      <span class="blue">I</span>
+      <span class="green">L</span>
+      <span class="red">E</span>
 
     </div>
 
 
-    <div class="buttons">
+    <!-- =========================
+         検索
+    ========================= -->
 
-      <button
-        onclick="googleSearch()"
-      >
-        Google Search
-      </button>
+    <div class="search-area">
+
+      <div class="search-box">
+
+        <span class="search-icon">
+          🔍
+        </span>
+
+        <input
+          id="searchInput"
+          type="text"
+          placeholder="Search"
+          autocomplete="off"
+        >
+
+      </div>
 
 
-      <a href="game.html">
-        🎮 GAME
-      </a>
+      <!-- =========================
+           ボタン
+      ========================= -->
+
+      <div class="buttons">
+
+        <button
+          onclick="googleSearch()"
+        >
+          Google Search
+        </button>
+
+
+        <a href="game.html">
+          🎮 GAME
+        </a>
+
+      </div>
 
     </div>
 
-  </div>
+  </main>
 
-</main>
 
+  <!-- =========================
+       フッター
+  ========================= -->
 
-<!-- =========================
-     フッター
-========================= -->
+  <footer>
 
-<footer>
+    <a href="index.html">
+      HOME
+    </a>
 
-  <a href="index.html">
-    HOME
-  </a>
+    <a href="profile.html">
+      PROFILE
+    </a>
 
-  <a href="profile.html">
-    PROFILE
-  </a>
+    <a href="favorite.html">
+      FAVORITE
+    </a>
 
-  <a href="favorite.html">
-    FAVORITE
-  </a>
+    <a href="game.html">
+      🎮 GAME
+    </a>
 
-  <a href="game.html">
-    🎮 GAME
-  </a>
+  </footer>
 
-</footer>
 
+  <!-- =========================
+       検索機能
+  ========================= -->
 
-<script>
+  <script>
 
-function googleSearch() {
+    function googleSearch() {
 
-  const text =
-    document.getElementById(
-      "searchInput"
-    ).value.trim();
+      const text =
+        document
+          .getElementById(
+            "searchInput"
+          )
+          .value
+          .trim();
 
 
-  if (text === "") {
+      // 空欄なら何もしない
 
-    return;
+      if (text === "") {
 
-  }
-
-
-  // 小文字に変換して判定
-  const search =
-    text.toLowerCase();
-
-
-  // =========================
-  // サイト内検索
-  // =========================
-
-  if (
-    search === "profile"
-  ) {
-
-    window.location.href =
-      "profile.html";
-
-    return;
-
-  }
-
-
-  if (
-    search === "favorite"
-  ) {
-
-    window.location.href =
-      "favorite.html";
-
-    return;
-
-  }
-
-
-  if (
-    search === "game"
-  ) {
-
-    window.location.href =
-      "game.html";
-
-    return;
-
-  }
-
-
-  if (
-    search === "home"
-  ) {
-
-    window.location.href =
-      "index.html";
-
-    return;
-
-  }
-
-
-  // =========================
-  // 日本語でも検索できるようにする
-  // =========================
-
-  if (
-    search === "プロフィール"
-  ) {
-
-    window.location.href =
-      "profile.html";
-
-    return;
-
-  }
-
-
-  if (
-    search === "お気に入り" ||
-    search === "お気に入りページ"
-  ) {
-
-    window.location.href =
-      "favorite.html";
-
-    return;
-
-  }
-
-
-  if (
-    search === "ゲーム"
-  ) {
-
-    window.location.href =
-      "game.html";
-
-    return;
-
-  }
-
-
-  if (
-    search === "ホーム"
-  ) {
-
-    window.location.href =
-      "index.html";
-
-    return;
-
-  }
-
-
-  // =========================
-  // その他はGoogle検索
-  // =========================
-
-  window.location.href =
-    "https://www.google.com/search?q="
-    +
-    encodeURIComponent(text);
-
-}
-
-
-// =========================
-// Enterキーで検索
-// =========================
-
-document
-  .getElementById("searchInput")
-  .addEventListener(
-    "keydown",
-    function(event) {
-
-      if (
-        event.key === "Enter"
-      ) {
-
-        googleSearch();
+        return;
 
       }
 
-    }
-  );
+
+      // 小文字にする
+
+      const search =
+        text.toLowerCase();
 
 
-// Enterキーでも検索
+      /* =========================
+         サイト内検索
+      ========================= */
 
-document
-  .getElementById("searchInput")
-  .addEventListener(
-    "keydown",
-    function(event) {
+
+      // PROFILE
 
       if (
-        event.key === "Enter"
+        search === "profile" ||
+        search === "プロフィール"
       ) {
 
-        googleSearch();
+        window.location.href =
+          "profile.html";
+
+        return;
 
       }
 
-    }
-  );
 
-</script>
+      // FAVORITE
+
+      if (
+        search === "favorite" ||
+        search === "お気に入り" ||
+        search === "お気に入りページ"
+      ) {
+
+        window.location.href =
+          "favorite.html";
+
+        return;
+
+      }
+
+
+      // GAME
+
+      if (
+        search === "game" ||
+        search === "ゲーム"
+      ) {
+
+        window.location.href =
+          "game.html";
+
+        return;
+
+      }
+
+
+      // HOME
+
+      if (
+        search === "home" ||
+        search === "ホーム"
+      ) {
+
+        window.location.href =
+          "index.html";
+
+        return;
+
+      }
+
+
+      /* =========================
+         その他はGoogle検索
+      ========================= */
+
+      window.location.href =
+        "https://www.google.com/search?q="
+        +
+        encodeURIComponent(text);
+
+    }
+
+
+    /* =========================
+       Enterキーで検索
+    ========================= */
+
+    document
+      .getElementById(
+        "searchInput"
+      )
+      .addEventListener(
+        "keydown",
+        function(event) {
+
+          if (
+            event.key === "Enter"
+          ) {
+
+            googleSearch();
+
+          }
+
+        }
+      );
+
+  </script>
 
 
 </body>
