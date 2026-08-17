@@ -187,3 +187,17 @@ input[type="file"] {
     border-radius: 14px;
     margin-bottom: 10px;
 }
+
+.game-button {
+  display: inline-block;
+  padding: 10px 20px;
+  background: #4CAF50;
+  color: white;
+  text-decoration: none;
+  border-radius: 10px;
+  font-weight: bold;
+}
+
+.game-button:hover {
+  opacity: 0.8;
+}
