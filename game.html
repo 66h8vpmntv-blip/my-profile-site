@@ -932,92 +932,96 @@ function createEnemy(
 let coins = [];
 
 
-const stage1CoinData = [
+// =========================
+// コイン配置
+// =========================
 
-  {
-    x: 250,
-    y: 250
-  },
+// 地面に置くコイン
+const stage1GroundCoins = [
 
-  {
-    x: 700,
-    y: 200
-  },
+  { x: 250 },
 
-  {
-    x: 850,
-    y: 250
-  },
+  { x: 700 },
 
-  {
-    x: 1250,
-    y: 180
-  },
+  { x: 850 },
 
-  {
-    x: 1450,
-    y: 250
-  },
+  { x: 1250 },
 
-  {
-    x: 1850,
-    y: 180
-  },
+  { x: 1450 },
 
-  {
-    x: 2300,
-    y: 250
-  },
+  { x: 1850 },
 
-  {
-    x: 2700,
-    y: 180
-  }
+  { x: 2300 },
+
+  { x: 2700 }
 
 ];
 
 
-const stage2CoinData = [
+// ジャンプして取るコイン
+const stage1JumpCoins = [
 
-  {
-    x: 150,
-    y: 200
-  },
+  { x: 400 },
 
-  {
-    x: 600,
-    y: 150
-  },
+  { x: 800 },
 
-  {
-    x: 1050,
-    y: 250
-  },
+  { x: 1350 },
 
-  {
-    x: 1500,
-    y: 180
-  },
+  { x: 1500 },
 
-  {
-    x: 1650,
-    y: 250
-  },
+  { x: 1850 },
 
-  {
-    x: 2050,
-    y: 150
-  },
+  { x: 2450 },
 
-  {
-    x: 2500,
-    y: 220
-  },
+  { x: 2800 }
 
-  {
-    x: 2800,
-    y: 150
-  }
+];
+
+
+// =========================
+// STAGE 2
+// =========================
+
+// 地面コイン
+const stage2GroundCoins = [
+
+  { x: 150 },
+
+  { x: 600 },
+
+  { x: 1050 },
+
+  { x: 1500 },
+
+  { x: 1650 },
+
+  { x: 2050 },
+
+  { x: 2500 },
+
+  { x: 2800 }
+
+];
+
+
+// ジャンプコイン
+const stage2JumpCoins = [
+
+  { x: 300 },
+
+  { x: 600 },
+
+  { x: 1100 },
+
+  { x: 1550 },
+
+  { x: 1750 },
+
+  { x: 2050 },
+
+  { x: 2600 },
+
+  { x: 2900 }
 
 ];
 
@@ -1396,10 +1400,53 @@ function loadStage() {
   // コイン
   // =========================
 
-  const coinData =
-    stage === 1
-    ? stage1CoinData
-    : stage2CoinData;
+  // =========================
+// コインを配置
+// =========================
+
+const groundCoins =
+  stage === 1
+  ? stage1GroundCoins
+  : stage2GroundCoins;
+
+const jumpCoins =
+  stage === 1
+  ? stage1JumpCoins
+  : stage2JumpCoins;
+
+
+// 地面コイン
+coins = groundCoins.map(
+  c => ({
+
+    x: c.x,
+
+    y: 25,
+
+    size: 22,
+
+    taken: false
+
+  })
+);
+
+
+// ジャンプコイン
+coins.push(
+  ...jumpCoins.map(
+    c => ({
+
+      x: c.x,
+
+      y: 150,
+
+      size: 22,
+
+      taken: false
+
+    })
+  )
+);
 
 
   coins =
