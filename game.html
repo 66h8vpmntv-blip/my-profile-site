@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>2D Action Game</title>
+
+<style>
+* {
+  box-sizing: border-box;
+  touch-action: none;
+}
+
+body {
+  margin: 0;
+  background: #111;
+  overflow: hidden;
+  font-family: sans-serif;
+}
+
+#game {
+  display: block;
+  width: 100vw;
+  height: 70vh;
+  background: linear-gradient(#74c0fc, #d0ebff);
+}
+
+#controls {
+  height: 30vh;
+  background: #222;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+button {
+  width: 100px;
+  height: 100px;
+  border: none;
+  border-radius: 50%;
+  background: #555;
+  color: white;
+  font-size: 40px;
+}
+
+#jump {
+  background: #e03131;
+}
+
+#info {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  color: white;
+  font-size: 20px;
+  font-weight: bold;
+}
+</style>
+</head>
+
+<body>
+
+<div id="info">SCORE: 0</div>
+
+<canvas id="game"></canvas>
+
+<div id="controls">
+  <button id="left">←</button>
+  <button id="jump">↑</button>
+  <button id="right">→</button>
+</div>
+
+<script>
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
+
+function resize() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight * 0.7;
+}
+
+resize();
+window.addEventListener("resize", resize);
+
+const player = {
+  x: 100,
+  y: 100,
+  width: 40,
+  height: 40,
+  vx: 0,
+  vy: 0,
+  speed: 5,
+  jumpPower: 12,
+  grounded: false
+};
+
+const gravity = 0.6;
+
+const ground = {
+  x: 0,
+  y: canvas.height - 50,
+  width: canvas.width,
+  height: 50
+};
+
+let score = 0;
+
+const keys = {
+  left: false,
+  right: false
+};
+
+function jump() {
+  if (player.grounded) {
+    player.vy = -player.jumpPower;
+    player.grounded = false;
+  }
+}
+
+document.getElementById("left").addEventListener("touchstart", e => {
+  e.preventDefault();
+  keys.left = true;
+});
+
+document.getElementById("left").addEventListener("touchend", e => {
+  e.preventDefault();
+  keys.left = false;
+});
+
+document.getElementById("right").addEventListener("touchstart", e => {
+  e.preventDefault();
+  keys.right = true;
+});
+
+document.getElementById("right").addEventListener("touchend", e => {
+  e.preventDefault();
+  keys.right = false;
+});
+
+document.getElementById("jump").addEventListener("touchstart", e => {
+  e.preventDefault();
+  jump();
+});
+
+function update() {
+
+  if (keys.left) {
+    player.vx = -player.speed;
+  } else if (keys.right) {
+    player.vx = player.speed;
+  } else {
+    player.vx = 0;
+  }
+
+  player.x += player.vx;
+
+  player.vy += gravity;
+  player.y += player.vy;
+
+  if (player.y + player.height >= ground.y) {
+    player.y = ground.y - player.height;
+    player.vy = 0;
+    player.grounded = true;
+  }
+
+  if (player.x < 0) {
+    player.x = 0;
+  }
+
+  if (player.x + player.width > canvas.width) {
+    player.x = canvas.width - player.width;
+  }
+}
+
+function draw() {
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // 地面
+  ctx.fillStyle = "#40c057";
+  ctx.fillRect(
+    ground.x,
+    ground.y,
+    ground.width,
+    ground.height
+  );
+
+  // プレイヤー
+  ctx.fillStyle = "#ff6b6b";
+  ctx.fillRect(
+    player.x,
+    player.y,
+    player.width,
+    player.height
+  );
+
+  document.getElementById("info").textContent =
+    "SCORE: " + score;
+}
+
+function gameLoop() {
+  update();
+  draw();
+  requestAnimationFrame(gameLoop);
+}
+
+gameLoop();
+</script>
+
+</body>
+</html>
