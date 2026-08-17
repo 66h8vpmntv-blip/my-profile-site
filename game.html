@@ -31,7 +31,7 @@ body {
   top: 10px;
   left: 10px;
   color: white;
-  font-size: 20px;
+  font-size: 18px;
   font-weight: bold;
   z-index: 10;
 }
@@ -62,7 +62,7 @@ button {
 
 <body>
 
-<div id="info">❤️ HP: 3　🪙 COIN: 0</div>
+<div id="info"></div>
 
 <canvas id="game"></canvas>
 
@@ -77,6 +77,17 @@ button {
 const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
 
+const gravity = 0.6;
+
+let stage = 1;
+let hp = 3;
+let coinCount = 0;
+let gameOver = false;
+let stageClear = false;
+let finalClear = false;
+
+
+// プレイヤー
 const player = {
   x: 80,
   y: 100,
@@ -89,6 +100,17 @@ const player = {
   grounded: false
 };
 
+
+// 地面
+const ground = {
+  x: 0,
+  y: 0,
+  width: 0,
+  height: 50
+};
+
+
+// 敵
 const enemy = {
   x: 500,
   y: 100,
@@ -97,21 +119,8 @@ const enemy = {
   vx: 2.5
 };
 
-const ground = {
-  x: 0,
-  y: 0,
-  width: 0,
-  height: 50
-};
 
-const coins = [
-  { x: 250, y: 250, size: 22, taken: false },
-  { x: 380, y: 180, size: 22, taken: false },
-  { x: 520, y: 250, size: 22, taken: false },
-  { x: 680, y: 150, size: 22, taken: false },
-  { x: 820, y: 250, size: 22, taken: false }
-];
-
+// ゴール
 const goal = {
   x: 0,
   y: 0,
@@ -119,12 +128,31 @@ const goal = {
   height: 80
 };
 
-let hp = 3;
-let coinCount = 0;
-let gameClear = false;
-let gameOver = false;
 
-const gravity = 0.6;
+// コイン
+let coins = [];
+
+
+// ステージ1
+const stage1Coins = [
+  { x: 220, y: 250 },
+  { x: 350, y: 180 },
+  { x: 480, y: 250 },
+  { x: 620, y: 170 },
+  { x: 760, y: 250 }
+];
+
+
+// ステージ2
+const stage2Coins = [
+  { x: 180, y: 180 },
+  { x: 320, y: 250 },
+  { x: 450, y: 150 },
+  { x: 590, y: 230 },
+  { x: 730, y: 130 },
+  { x: 850, y: 250 }
+];
+
 
 const keys = {
   left: false,
@@ -163,10 +191,55 @@ function collision(a, b) {
 }
 
 
+// ステージを読み込む
+function loadStage() {
+
+  player.x = 80;
+  player.y = 100;
+  player.vx = 0;
+  player.vy = 0;
+
+  enemy.x = stage === 1 ? 500 : 450;
+
+  enemy.vx = stage === 1 ? 2.5 : 4;
+
+  coinCount = 0;
+
+  stageClear = false;
+
+  gameOver = false;
+
+  if (stage === 1) {
+
+    coins = stage1Coins.map(coin => ({
+      x: coin.x,
+      y: coin.y,
+      size: 22,
+      taken: false
+    }));
+
+  } else {
+
+    coins = stage2Coins.map(coin => ({
+      x: coin.x,
+      y: coin.y,
+      size: 22,
+      taken: false
+    }));
+
+  }
+}
+
+
 // ジャンプ
 function jump() {
 
-  if (player.grounded && !gameOver && !gameClear) {
+  if (
+    player.grounded &&
+    !gameOver &&
+    !stageClear &&
+    !finalClear
+  ) {
 
     player.vy = -player.jumpPower;
 
@@ -175,29 +248,41 @@ function jump() {
 }
 
 
-// ボタン設定
+// ボタン
 function setupButton(id, key) {
 
   const button = document.getElementById(id);
 
   button.addEventListener("touchstart", e => {
+
     e.preventDefault();
+
     keys[key] = true;
+
   });
 
   button.addEventListener("touchend", e => {
+
     e.preventDefault();
+
     keys[key] = false;
+
   });
 
   button.addEventListener("mousedown", e => {
+
     e.preventDefault();
+
     keys[key] = true;
+
   });
 
   button.addEventListener("mouseup", e => {
+
     e.preventDefault();
+
     keys[key] = false;
+
   });
 }
 
@@ -206,17 +291,24 @@ setupButton("right", "right");
 
 
 document.getElementById("jump").addEventListener("touchstart", e => {
+
   e.preventDefault();
+
   jump();
+
 });
+
 
 document.getElementById("jump").addEventListener("mousedown", e => {
+
   e.preventDefault();
+
   jump();
+
 });
 
 
-// キーボード操作
+// キーボード
 window.addEventListener("keydown", e => {
 
   if (e.key === "ArrowLeft") {
@@ -247,30 +339,63 @@ window.addEventListener("keyup", e => {
 });
 
 
-// ゲーム更新
+// ステージクリア
+function clearStage() {
+
+  stageClear = true;
+
+  setTimeout(() => {
+
+    if (stage === 1) {
+
+      stage = 2;
+
+      loadStage();
+
+    } else {
+
+      finalClear = true;
+
+    }
+
+  }, 1500);
+}
+
+
+// 更新
 function update() {
 
-  if (gameOver || gameClear) {
+  if (
+    gameOver ||
+    stageClear ||
+    finalClear
+  ) {
     return;
   }
 
 
-  // プレイヤー移動
+  // 移動
   if (keys.left) {
+
     player.vx = -player.speed;
-  }
-  else if (keys.right) {
+
+  } else if (keys.right) {
+
     player.vx = player.speed;
-  }
-  else {
+
+  } else {
+
     player.vx = 0;
+
   }
+
 
   player.x += player.vx;
 
 
   // 重力
   player.vy += gravity;
+
   player.y += player.vy;
 
 
@@ -282,27 +407,35 @@ function update() {
     player.vy = 0;
 
     player.grounded = true;
+
   }
 
 
   // 画面端
   if (player.x < 0) {
+
     player.x = 0;
+
   }
 
   if (player.x + player.width > canvas.width) {
+
     player.x = canvas.width - player.width;
+
   }
 
 
   // 敵
   enemy.x += enemy.vx;
 
+
   if (
     enemy.x < 100 ||
     enemy.x + enemy.width > canvas.width - 100
   ) {
+
     enemy.vx *= -1;
+
   }
 
 
@@ -314,11 +447,15 @@ function update() {
     player.x = 80;
     player.y = 100;
 
-    enemy.x = 500;
+    enemy.x = stage === 1 ? 500 : 450;
+
 
     if (hp <= 0) {
+
       gameOver = true;
+
     }
+
   }
 
 
@@ -328,26 +465,33 @@ function update() {
     if (!coin.taken) {
 
       const coinBox = {
+
         x: coin.x,
         y: coin.y,
         width: coin.size,
         height: coin.size
+
       };
+
 
       if (collision(player, coinBox)) {
 
         coin.taken = true;
 
         coinCount++;
+
       }
+
     }
+
   }
 
 
   // ゴール
   if (collision(player, goal)) {
 
-    gameClear = true;
+    clearStage();
+
   }
 
 }
@@ -357,6 +501,25 @@ function update() {
 function draw() {
 
   ctx.clearRect(
+    0,
+    0,
+    canvas.width,
+    canvas.height
+  );
+
+
+  // ステージによって背景を変更
+  if (stage === 1) {
+
+    ctx.fillStyle = "#74c0fc";
+
+  } else {
+
+    ctx.fillStyle = "#b197fc";
+
+  }
+
+  ctx.fillRect(
     0,
     0,
     canvas.width,
@@ -399,11 +562,13 @@ function draw() {
       ctx.lineWidth = 3;
 
       ctx.stroke();
+
     }
+
   }
 
 
-  // ゴールの旗
+  // ゴール
   ctx.fillStyle = "#7950f2";
 
   ctx.fillRect(
@@ -412,6 +577,7 @@ function draw() {
     8,
     goal.height
   );
+
 
   ctx.fillStyle = "#ff6b6b";
 
@@ -449,7 +615,8 @@ function draw() {
 
 
   // 敵
-  ctx.fillStyle = "#7048e8";
+  ctx.fillStyle =
+    stage === 1 ? "#7048e8" : "#c92a2a";
 
   ctx.fillRect(
     enemy.x,
@@ -479,11 +646,41 @@ function draw() {
 
   // 情報
   document.getElementById("info").textContent =
-    "❤️ HP: " + hp +
-    "　🪙 COIN: " + coinCount + "/5";
+    "STAGE " + stage +
+    "　❤️ HP: " + hp +
+    "　🪙 COIN: " + coinCount + "/" + coins.length;
 
 
-  // GAME OVER
+  // ステージクリア表示
+  if (stageClear) {
+
+    ctx.fillStyle = "rgba(0,0,0,0.65)";
+
+    ctx.fillRect(
+      0,
+      0,
+      canvas.width,
+      canvas.height
+    );
+
+    ctx.fillStyle = "#ffd43b";
+
+    ctx.textAlign = "center";
+
+    ctx.font = "45px sans-serif";
+
+    ctx.fillText(
+      "STAGE " + stage + " CLEAR!",
+      canvas.width / 2,
+      canvas.height / 2
+    );
+
+    ctx.textAlign = "left";
+
+  }
+
+
+  // ゲームオーバー
   if (gameOver) {
 
     ctx.fillStyle = "rgba(0,0,0,0.7)";
@@ -499,7 +696,7 @@ function draw() {
 
     ctx.textAlign = "center";
 
-    ctx.font = "40px sans-serif";
+    ctx.font = "45px sans-serif";
 
     ctx.fillText(
       "GAME OVER",
@@ -516,13 +713,14 @@ function draw() {
     );
 
     ctx.textAlign = "left";
+
   }
 
 
-  // CLEAR
-  if (gameClear) {
+  // 最終クリア
+  if (finalClear) {
 
-    ctx.fillStyle = "rgba(0,0,0,0.7)";
+    ctx.fillStyle = "rgba(0,0,0,0.75)";
 
     ctx.fillRect(
       0,
@@ -538,7 +736,7 @@ function draw() {
     ctx.font = "50px sans-serif";
 
     ctx.fillText(
-      "🎉 CLEAR!",
+      "🎉 ALL CLEAR!",
       canvas.width / 2,
       canvas.height / 2
     );
@@ -548,15 +746,20 @@ function draw() {
     ctx.font = "24px sans-serif";
 
     ctx.fillText(
-      "コイン: " + coinCount + "/5",
+      "STAGE 1 & 2 COMPLETE!",
       canvas.width / 2,
       canvas.height / 2 + 50
     );
 
     ctx.textAlign = "left";
+
   }
 
 }
+
+
+// ゲーム開始
+loadStage();
 
 
 // ゲームループ
@@ -567,6 +770,7 @@ function gameLoop() {
   draw();
 
   requestAnimationFrame(gameLoop);
+
 }
 
 gameLoop();
