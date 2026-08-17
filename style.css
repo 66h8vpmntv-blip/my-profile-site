@@ -1,3 +1,7 @@
+/* =========================
+   全体
+========================= */
+
 * {
   box-sizing: border-box;
 }
@@ -46,12 +50,11 @@ header a:hover {
 
 
 /* =========================
-   HOMEメイン
+   HOME
 ========================= */
 
 main {
-  min-height:
-    calc(100vh - 130px);
+  min-height: calc(100vh - 130px);
 
   display: flex;
 
@@ -66,7 +69,7 @@ main {
 
 
 /* =========================
-   Google風ロゴ
+   Google風タイトル
 ========================= */
 
 .logo {
@@ -78,9 +81,7 @@ main {
 
   margin-bottom: 30px;
 
-  font-family:
-    Arial,
-    sans-serif;
+  font-family: Arial, sans-serif;
 }
 
 
@@ -108,10 +109,7 @@ main {
 ========================= */
 
 .search-area {
-  width: min(
-    90vw,
-    580px
-  );
+  width: min(90vw, 580px);
 }
 
 
@@ -124,8 +122,7 @@ main {
 
   height: 48px;
 
-  border:
-    1px solid #dfe1e5;
+  border: 1px solid #dfe1e5;
 
   border-radius: 24px;
 
@@ -138,22 +135,12 @@ main {
   background: white;
 
   box-shadow:
-    0 1px 6px rgba(
-      32,
-      33,
-      36,
-      0.15
-    );
+    0 1px 6px rgba(32, 33, 36, 0.15);
 }
 
 .search-box:hover {
   box-shadow:
-    0 1px 8px rgba(
-      32,
-      33,
-      36,
-      0.25
-    );
+    0 1px 8px rgba(32, 33, 36, 0.25);
 }
 
 
@@ -171,7 +158,7 @@ main {
 
 
 /* =========================
-   入力欄
+   検索入力
 ========================= */
 
 #searchInput {
@@ -194,7 +181,7 @@ main {
 
 
 /* =========================
-   検索ボタン
+   ボタン
 ========================= */
 
 .buttons {
@@ -209,15 +196,13 @@ main {
 
 .buttons a,
 .buttons button {
-  border:
-    1px solid #f8f9fa;
+  border: 1px solid #f8f9fa;
 
   background: #f8f9fa;
 
   color: #202124;
 
-  padding:
-    10px 18px;
+  padding: 10px 18px;
 
   border-radius: 4px;
 
@@ -230,17 +215,10 @@ main {
 
 .buttons a:hover,
 .buttons button:hover {
-  border:
-    1px solid #dadce0;
+  border: 1px solid #dadce0;
 
   box-shadow:
-    0 1px 1px
-    rgba(
-      0,
-      0,
-      0,
-      0.1
-    );
+    0 1px 1px rgba(0, 0, 0, 0.1);
 }
 
 
@@ -270,8 +248,7 @@ footer {
 
   gap: 25px;
 
-  border-top:
-    1px solid #dadce0;
+  border-top: 1px solid #dadce0;
 }
 
 footer a {
