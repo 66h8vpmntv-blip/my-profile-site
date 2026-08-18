@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>DATE & WEATHER</title>
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
+</head>
+
+
+<body>
+
+
+<!-- =========================
+     ナビゲーション
+========================= -->
+
+<nav class="navbar">
+
+    <a href="index.html">
+        HOME
+    </a>
+
+    <a href="profile.html">
+        PROFILE
+    </a>
+
+    <a href="favorite.html">
+        FAVORITE
+    </a>
+
+    <a href="game.html">
+        🎮 GAME
+    </a>
+
+    <a href="date-weather.html">
+        ☀️ WEATHER
+    </a>
+
+</nav>
+
+
+<!-- =========================
+     DATE & WEATHER
+========================= -->
+
+<div class="weather-card">
+
+    <h1>
+        DATE & WEATHER
+    </h1>
+
+
+    <!-- 今日の日付 -->
+
+    <div class="date-section">
+
+        <div class="date-label">
+            TODAY
+        </div>
+
+        <div
+            id="todayDate"
+            class="today-date"
+        >
+            読み込み中...
+        </div>
+
+        <div
+            id="todayDay"
+            class="today-day"
+        >
+            読み込み中...
+        </div>
+
+    </div>
+
+
+    <!-- 現在時刻 -->
+
+    <div class="time-box">
+
+        <div class="small-label">
+            CURRENT TIME
+        </div>
+
+        <div
+            id="currentTime"
+            class="current-time"
+        >
+            --:--:--
+        </div>
+
+    </div>
+
+
+    <!-- 天気 -->
+
+    <div class="weather-section">
+
+        <div
+            id="weatherIcon"
+            class="weather-icon"
+        >
+            🌤️
+        </div>
+
+        <div
+            id="weatherText"
+            class="weather-text"
+        >
+            天気を取得中...
+        </div>
+
+        <div
+            id="temperature"
+            class="temperature"
+        >
+            --℃
+        </div>
+
+    </div>
+
+
+    <!-- 詳細 -->
+
+    <div class="weather-details">
+
+        <div class="weather-detail">
+
+            <span>
+                💧 湿度
+            </span>
+
+            <strong id="humidity">
+                -- %
+            </strong>
+
+        </div>
+
+
+        <div class="weather-detail">
+
+            <span>
+                💨 風速
+            </span>
+
+            <strong id="wind">
+                -- km/h
+            </strong>
+
+        </div>
+
+
+        <div class="weather-detail">
+
+            <span>
+                📍 場所
+            </span>
+
+            <strong id="location">
+                現在地を取得中...
+            </strong>
+
+        </div>
+
+    </div>
+
+
+    <!-- 更新ボタン -->
+
+    <button
+        class="weather-button"
+        onclick="getWeather()"
+    >
+        🔄 天気を更新
+    </button>
+
+
+    <br>
+
+
+    <a
+        href="index.html"
+        class="button"
+    >
+        HOMEに戻る
+    </a>
+
+</div>
+
+
+<script>
+
+
+/* =========================
+   今日の日付
+========================= */
+
+function updateDate() {
+
+    const now = new Date();
+
+
+    const year =
+        now.getFullYear();
+
+    const month =
+        now.getMonth() + 1;
+
+    const day =
+        now.getDate();
+
+
+    const weekdays = [
+        "日曜日",
+        "月曜日",
+        "火曜日",
+        "水曜日",
+        "木曜日",
+        "金曜日",
+        "土曜日"
+    ];
+
+
+    document.getElementById(
+        "todayDate"
+    ).textContent =
+        year + "年" +
+        month + "月" +
+        day + "日";
+
+
+    document.getElementById(
+        "todayDay"
+    ).textContent =
+        weekdays[now.getDay()];
+
+}
+
+
+/* =========================
+   現在時刻
+========================= */
+
+function updateTime() {
+
+    const now = new Date();
+
+
+    const hours =
+        String(
+            now.getHours()
+        ).padStart(2, "0");
+
+
+    const minutes =
+        String(
+            now.getMinutes()
+        ).padStart(2, "0");
+
+
+    const seconds =
+        String(
+            now.getSeconds()
+        ).padStart(2, "0");
+
+
+    document.getElementById(
+        "currentTime"
+    ).textContent =
+        hours + ":" +
+        minutes + ":" +
+        seconds;
+
+}
+
+
+updateDate();
+
+updateTime();
+
+setInterval(
+    updateTime,
+    1000
+);
+
+
+/* =========================
+   天気コード
+========================= */
+
+function weatherInfo(code) {
+
+    if (code === 0) {
+        return ["☀️", "快晴"];
+    }
+
+    if (
+        code === 1 ||
+        code === 2
+    ) {
+        return ["🌤️", "晴れ"];
+    }
+
+    if (code === 3) {
+        return ["☁️", "曇り"];
+    }
+
+    if (
+        code === 45 ||
+        code === 48
+    ) {
+        return ["🌫️", "霧"];
+    }
+
+    if (
+        code >= 51 &&
+        code <= 57
+    ) {
+        return ["🌦️", "霧雨"];
+    }
+
+    if (
+        code >= 61 &&
+        code <= 67
+    ) {
+        return ["🌧️", "雨"];
+    }
+
+    if (
+        code >= 71 &&
+        code <= 77
+    ) {
+        return ["❄️", "雪"];
+    }
+
+    if (
+        code >= 80 &&
+        code <= 82
+    ) {
+        return ["🌧️", "にわか雨"];
+    }
+
+    if (
+        code >= 95 &&
+        code <= 99
+    ) {
+        return ["⛈️", "雷雨"];
+    }
+
+
+    return ["🌤️", "不明"];
+
+}
+
+
+/* =========================
+   天気取得
+========================= */
+
+function getWeather() {
+
+
+    if (!navigator.geolocation) {
+
+        document.getElementById(
+            "weatherText"
+        ).textContent =
+            "位置情報に対応していません";
+
+        return;
+
+    }
+
+
+    document.getElementById(
+        "weatherText"
+    ).textContent =
+        "現在地を取得中...";
+
+
+    navigator.geolocation.getCurrentPosition(
+
+        function(position) {
+
+            const latitude =
+                position.coords.latitude;
+
+            const longitude =
+                position.coords.longitude;
+
+
+            const url =
+                "https://api.open-meteo.com/v1/forecast"
+                +
+                "?latitude="
+                + latitude
+                +
+                "&longitude="
+                + longitude
+                +
+                "&current="
+                +
+                "temperature_2m,"
+                +
+                "relative_humidity_2m,"
+                +
+                "weather_code,"
+                +
+                "wind_speed_10m"
+                +
+                "&timezone=auto";
+
+
+            fetch(url)
+
+                .then(
+                    response =>
+                        response.json()
+                )
+
+                .then(
+                    data => {
+
+                        const current =
+                            data.current;
+
+
+                        const info =
+                            weatherInfo(
+                                current.weather_code
+                            );
+
+
+                        document.getElementById(
+                            "weatherIcon"
+                        ).textContent =
+                            info[0];
+
+
+                        document.getElementById(
+                            "weatherText"
+                        ).textContent =
+                            info[1];
+
+
+                        document.getElementById(
+                            "temperature"
+                        ).textContent =
+                            Math.round(
+                                current.temperature_2m
+                            )
+                            + "℃";
+
+
+                        document.getElementById(
+                            "humidity"
+                        ).textContent =
+                            Math.round(
+                                current.relative_humidity_2m
+                            )
+                            + " %";
+
+
+                        document.getElementById(
+                            "wind"
+                        ).textContent =
+                            Math.round(
+                                current.wind_speed_10m
+                            )
+                            + " km/h";
+
+
+                        document.getElementById(
+                            "location"
+                        ).textContent =
+                            latitude.toFixed(2)
+                            +
+                            ", "
+                            +
+                            longitude.toFixed(2);
+
+                    }
+                )
+
+                .catch(
+                    error => {
+
+                        console.error(error);
+
+                        document.getElementById(
+                            "weatherText"
+                        ).textContent =
+                            "天気を取得できませんでした";
+
+                    }
+                );
+
+        },
+
+
+        function(error) {
+
+            document.getElementById(
+                "weatherText"
+            ).textContent =
+                "位置情報の許可が必要です";
+
+            document.getElementById(
+                "location"
+            ).textContent =
+                "位置情報OFF";
+
+        }
+
+    );
+
+}
+
+
+getWeather();
+
+
+</script>
+
+
+</body>
+
+</html>
