@@ -27,7 +27,7 @@ const words = [
 
 
 // ==============================
-// 学習記録
+// 学習データ
 // ==============================
 
 let studyData =
@@ -53,7 +53,9 @@ words.forEach(item => {
 });
 
 
+// ==============================
 // 保存
+// ==============================
 
 function saveStudyData() {
 
@@ -68,17 +70,68 @@ saveStudyData();
 
 
 // ==============================
-// クイズ設定
+// 定着度を取得
 // ==============================
 
-let quizWords = [];
-let currentQuestion = 0;
-let correctCount = 0;
-let answered = false;
+function getMasteryLevel(streak) {
+
+  if (streak >= 5) {
+    return 5;
+  }
+
+  return streak;
+
+}
 
 
 // ==============================
-// URLを確認
+// 定着度の名前
+// ==============================
+
+function getMasteryText(streak) {
+
+  if (streak >= 5) {
+    return "⭐ 習得";
+  }
+
+  if (streak === 4) {
+    return "💪 かなり定着";
+  }
+
+  if (streak === 3) {
+    return "👍 だいぶ定着";
+  }
+
+  if (streak === 2) {
+    return "📖 学習中";
+  }
+
+  if (streak === 1) {
+    return "🌱 覚え始め";
+  }
+
+  return "🔥 要復習";
+
+}
+
+
+// ==============================
+// 定着度の★表示
+// ==============================
+
+function getMasteryStars(streak) {
+
+  const level =
+    getMasteryLevel(streak);
+
+  return "★".repeat(level) +
+         "☆".repeat(5 - level);
+
+}
+
+
+// ==============================
+// URLモード
 // ==============================
 
 const urlParams =
@@ -91,7 +144,18 @@ const quizMode =
 
 
 // ==============================
-// 通常クイズを作る
+// クイズ設定
+// ==============================
+
+let quizWords = [];
+let currentQuestion = 0;
+let correctCount = 0;
+let answered = false;
+
+
+// ==============================
+// 通常クイズ
+// 定着していない単語を優先
 // ==============================
 
 function createNormalQuiz() {
@@ -104,20 +168,61 @@ function createNormalQuiz() {
     const data =
       studyData[item.word];
 
-    // 苦手度
-    const weakness =
-      Math.max(
-        1,
-        data.wrong * 3 -
-        data.streak +
-        1
-      );
+
+    let priority = 1;
 
 
-    // 苦手な単語ほど多く追加
+    // 苦手単語を最優先
+
+    if (
+      data.wrong >= 2 &&
+      data.wrong > data.correct
+    ) {
+
+      priority += 5;
+
+    }
+
+
+    // 定着していないほど優先
+
+    if (data.streak === 0) {
+
+      priority += 4;
+
+    }
+
+    else if (data.streak === 1) {
+
+      priority += 3;
+
+    }
+
+    else if (data.streak === 2) {
+
+      priority += 2;
+
+    }
+
+    else if (data.streak === 3) {
+
+      priority += 1;
+
+    }
+
+
+    // 習得済みは出題頻度を下げる
+
+    if (data.streak >= 5) {
+
+      priority = 1;
+
+    }
+
+
     for (
       let i = 0;
-      i < weakness;
+      i < priority;
       i++
     ) {
 
@@ -161,7 +266,7 @@ function createNormalQuiz() {
   }
 
 
-  // 10問に足りなければ追加
+  // 10問に足りない場合
 
   if (
     selected.length < 10
@@ -197,7 +302,7 @@ function createNormalQuiz() {
 
 
 // ==============================
-// 苦手単語クイズを作る
+// 苦手単語クイズ
 // ==============================
 
 function createWeakQuiz() {
@@ -208,6 +313,7 @@ function createWeakQuiz() {
       const data =
         studyData[item.word];
 
+
       return (
         data.wrong >= 2 &&
         data.wrong > data.correct
@@ -216,25 +322,21 @@ function createWeakQuiz() {
     });
 
 
-  // 苦手単語がない場合
+  weakWords.sort((a, b) => {
 
-  if (
-    weakWords.length === 0
-  ) {
+    const A =
+      studyData[a.word];
 
-    return [];
-
-  }
+    const B =
+      studyData[b.word];
 
 
-  // シャッフル
+    return (
+      B.wrong - A.wrong
+    );
 
-  weakWords.sort(
-    () => Math.random() - 0.5
-  );
+  });
 
-
-  // 最大10問
 
   return weakWords.slice(
     0,
@@ -250,8 +352,6 @@ function createWeakQuiz() {
 
 function startQuiz() {
 
-  // 苦手単語モード
-
   if (
     quizMode === "weak"
   ) {
@@ -261,8 +361,6 @@ function startQuiz() {
 
   }
 
-  // 通常モード
-
   else {
 
     quizWords =
@@ -270,8 +368,6 @@ function startQuiz() {
 
   }
 
-
-  // 苦手単語がない場合
 
   if (
     quizWords.length === 0
@@ -294,7 +390,7 @@ function startQuiz() {
 
 
 // ==============================
-// 苦手単語がない場合
+// 苦手単語なし
 // ==============================
 
 function showNoWeakWords() {
@@ -341,6 +437,10 @@ function showQuestion() {
 
   const question =
     quizWords[currentQuestion];
+
+
+  const data =
+    studyData[question.word];
 
 
   document.getElementById(
@@ -502,7 +602,7 @@ function answer(
 
 
     result.textContent =
-      "⭕ 正解！";
+      `⭕ 正解！ ${getMasteryStars(data.streak)}`;
 
 
     result.className =
@@ -537,7 +637,7 @@ function answer(
   saveStudyData();
 
 
-  // 表示更新
+  // 表示
 
   document.getElementById(
     "correct"
@@ -551,7 +651,7 @@ function answer(
     currentQuestion + 1;
 
 
-  // ボタンを無効化
+  // 選択肢を無効化
 
   const buttons =
     document.querySelectorAll(
@@ -604,7 +704,7 @@ function nextQuestion() {
 
 
 // ==============================
-// クイズ終了
+// 終了
 // ==============================
 
 function finishQuiz() {
