@@ -1379,3 +1379,71 @@ footer a:hover {
   }
 
 }
+
+
+/* ==============================
+   WORD / STUDY タブ
+   ============================== */
+
+.study-tabs {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+
+  display: flex;
+
+  width: 100%;
+
+  background: white;
+
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+
+.study-tab {
+  flex: 1;
+
+  padding: 16px 10px;
+
+  text-align: center;
+
+  text-decoration: none;
+
+  color: #777;
+
+  font-weight: bold;
+
+  border-bottom: 3px solid transparent;
+
+  transition: 0.2s;
+}
+
+
+/* 選択中 */
+
+.study-tab.active {
+  color: #333;
+
+  border-bottom: 3px solid #333;
+}
+
+
+/* タップしたとき */
+
+.study-tab:active {
+  transform: scale(0.97);
+}
+
+
+/* スマホ */
+
+@media (max-width: 600px) {
+
+  .study-tab {
+    padding: 14px 5px;
+
+    font-size: 14px;
+  }
+
+}
