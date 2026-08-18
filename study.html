@@ -1,77 +1,174 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
+
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
 
   <title>学習記録</title>
 
-  <link rel="stylesheet" href="style.css">
+  <link
+    rel="stylesheet"
+    href="style.css"
+  >
+
 </head>
+
 
 <body>
 
+
+  <!-- ==============================
+       WORD / STUDY タブ
+       ============================== -->
+
   <nav class="study-tabs">
 
-  <a href="word.html" class="study-tab">
-    📖 WORD
-  </a>
+    <a
+      href="word.html"
+      class="study-tab"
+    >
+      📖 WORD
+    </a>
 
-  <a href="study.html" class="study-tab active">
-    📊 STUDY
-  </a>
+    <a
+      href="study.html"
+      class="study-tab active"
+    >
+      📊 STUDY
+    </a>
 
-</nav>
+  </nav>
+
+
   <header>
+
     <h1>📊 学習記録</h1>
+
+    <p>
+      単語の定着度を確認しよう！
+    </p>
+
   </header>
+
 
   <main class="study-container">
 
-    <!-- 全体の記録 -->
+
+    <!-- ==============================
+         全体の記録
+         ============================== -->
 
     <section class="study-summary">
 
+
       <div class="study-card">
+
         <h2>📚 学習単語</h2>
+
         <p>
-          <span id="learnedWords">0</span>
+
+          <span id="learnedWords">
+            0
+          </span>
+
           /
-          <span id="totalWords">0</span>
+
+          <span id="totalWords">
+            0
+          </span>
+
         </p>
+
       </div>
 
+
       <div class="study-card">
+
         <h2>⭐ 習得済み</h2>
+
         <p>
-          <span id="masteredWords">0</span>
+
+          <span id="masteredWords">
+            0
+          </span>
+
         </p>
+
       </div>
 
+
       <div class="study-card">
+
         <h2>📖 学習中</h2>
+
         <p>
-          <span id="learningWords">0</span>
+
+          <span id="learningWords">
+            0
+          </span>
+
         </p>
+
       </div>
 
+
       <div class="study-card">
-        <h2>🔥 苦手</h2>
+
+        <h2>🔥 要復習</h2>
+
         <p>
-          <span id="weakWords">0</span>
+
+          <span id="weakWords">
+            0
+          </span>
+
         </p>
+
       </div>
+
 
     </section>
 
 
-    <!-- 苦手単語 -->
+    <!-- ==============================
+         定着度の説明
+         ============================== -->
+
+    <section class="mastery-guide">
+
+      <h2>🧠 定着度</h2>
+
+      <p>🌱 ★☆☆☆☆　覚え始め</p>
+
+      <p>📖 ★★☆☆☆　学習中</p>
+
+      <p>👍 ★★★☆☆　だいぶ定着</p>
+
+      <p>💪 ★★★★☆　かなり定着</p>
+
+      <p>⭐ ★★★★★　習得</p>
+
+    </section>
+
+
+    <!-- ==============================
+         苦手単語
+         ============================== -->
 
     <section class="weak-section">
 
-      <h2>🔥 苦手単語ランキング</h2>
+      <h2>
+        🔥 要復習の単語
+      </h2>
 
       <div id="weakList"></div>
+
 
       <button
         id="weakQuizButton"
@@ -83,30 +180,50 @@
     </section>
 
 
-    <!-- 学習状況 -->
+    <!-- ==============================
+         全単語
+         ============================== -->
 
     <section class="all-section">
 
-      <h2>📖 単語一覧</h2>
+      <h2>
+        📖 単語の定着状況
+      </h2>
 
       <div id="wordList"></div>
 
     </section>
 
 
-    <!-- HOMEへ -->
+    <!-- ==============================
+         戻る
+         ============================== -->
 
-    <a href="word.html" class="page-button">
-  📚 単語学習
-</a>
-    <a href="index.html" class="home-button">
-      🏠 HOMEに戻る
+    <a
+      href="study-home.html"
+      class="home-button"
+    >
+      📚 学習HOME
     </a>
+
+
+    <a
+      href="index.html"
+      class="home-button"
+    >
+      🏠 元のHOME
+    </a>
+
 
   </main>
 
 
+  <!-- ==============================
+       学習データ読み込み
+       ============================== -->
+
   <script src="script.js"></script>
+
 
   <script>
 
@@ -139,13 +256,62 @@
 
 
     // ==============================
-    // 学習データ
+    // 保存されたデータ
     // ==============================
 
     const savedData =
       JSON.parse(
-        localStorage.getItem("wordStudyData")
+        localStorage.getItem(
+          "wordStudyData"
+        )
       ) || {};
+
+
+    // ==============================
+    // 定着度
+    // ==============================
+
+    function masteryStars(streak) {
+
+      const level =
+        Math.min(
+          streak,
+          5
+        );
+
+      return (
+        "★".repeat(level) +
+        "☆".repeat(5 - level)
+      );
+
+    }
+
+
+    function masteryText(streak) {
+
+      if (streak >= 5) {
+        return "⭐ 習得";
+      }
+
+      if (streak === 4) {
+        return "💪 かなり定着";
+      }
+
+      if (streak === 3) {
+        return "👍 だいぶ定着";
+      }
+
+      if (streak === 2) {
+        return "📖 学習中";
+      }
+
+      if (streak === 1) {
+        return "🌱 覚え始め";
+      }
+
+      return "🔥 要復習";
+
+    }
 
 
     // ==============================
@@ -153,8 +319,11 @@
     // ==============================
 
     let learned = 0;
+
     let mastered = 0;
+
     let learning = 0;
+
     let weak = 0;
 
 
@@ -168,7 +337,8 @@
         };
 
 
-      // 一度でも正解・不正解したら学習済み
+      // 学習済み
+
       if (
         data.correct > 0 ||
         data.wrong > 0
@@ -179,22 +349,20 @@
       }
 
 
-      // 5回以上連続正解 → 習得
-      if (data.streak >= 5) {
+      // 習得
+
+      if (
+        data.streak >= 5
+      ) {
 
         mastered++;
 
       }
 
-      // 間違いがある単語
-      else if (data.wrong > 0) {
 
-        learning++;
+      // 苦手
 
-      }
-
-      // 苦手判定
-      if (
+      else if (
         data.wrong >= 2 &&
         data.wrong > data.correct
       ) {
@@ -203,16 +371,29 @@
 
       }
 
+
+      // 学習中
+
+      else if (
+        data.correct > 0 ||
+        data.wrong > 0
+      ) {
+
+        learning++;
+
+      }
+
     });
 
 
     // ==============================
-    // 数字を表示
+    // 数字表示
     // ==============================
 
     document.getElementById(
       "learnedWords"
-    ).textContent = learned;
+    ).textContent =
+      learned;
 
 
     document.getElementById(
@@ -223,21 +404,24 @@
 
     document.getElementById(
       "masteredWords"
-    ).textContent = mastered;
+    ).textContent =
+      mastered;
 
 
     document.getElementById(
       "learningWords"
-    ).textContent = learning;
+    ).textContent =
+      learning;
 
 
     document.getElementById(
       "weakWords"
-    ).textContent = weak;
+    ).textContent =
+      weak;
 
 
     // ==============================
-    // 苦手ランキング
+    // 苦手単語ランキング
     // ==============================
 
     const weakList =
@@ -253,9 +437,8 @@
           const data =
             savedData[item.word];
 
-          if (!data) return false;
-
           return (
+            data &&
             data.wrong >= 2 &&
             data.wrong > data.correct
           );
@@ -269,15 +452,25 @@
           const B =
             savedData[b.word];
 
-          return B.wrong - A.wrong;
+
+          return (
+            B.wrong -
+            A.wrong
+          );
 
         });
 
 
-    if (weakWords.length === 0) {
+    if (
+      weakWords.length === 0
+    ) {
 
       weakList.innerHTML =
-        "<p>🎉 今のところ苦手な単語はありません！</p>";
+        `
+        <p>
+          🎉 今のところ要復習の単語はありません！
+        </p>
+        `;
 
     }
 
@@ -291,7 +484,9 @@
 
 
           const div =
-            document.createElement("div");
+            document.createElement(
+              "div"
+            );
 
 
           div.className =
@@ -299,23 +494,36 @@
 
 
           div.innerHTML = `
+
             <strong>
-              ${index + 1}. ${item.word}
+              ${index + 1}.
+              ${item.word}
             </strong>
 
             <span>
               ${item.meaning}
             </span>
 
+            <span>
+              ${masteryStars(data.streak)}
+            </span>
+
+            <span>
+              ${masteryText(data.streak)}
+            </span>
+
             <small>
               ⭕ ${data.correct}回
              　❌ ${data.wrong}回
-             　🔥 連続${data.streak}回
+             　連続正解 ${data.streak}回
             </small>
+
           `;
 
 
-          weakList.appendChild(div);
+          weakList.appendChild(
+            div
+          );
 
         }
       );
@@ -324,7 +532,7 @@
 
 
     // ==============================
-    // 全単語一覧
+    // 全単語
     // ==============================
 
     const wordList =
@@ -343,40 +551,10 @@
         };
 
 
-      let status =
-        "🔵 未学習";
-
-
-      if (data.streak >= 5) {
-
-        status =
-          "⭐ 習得";
-
-      }
-
-      else if (
-        data.wrong >= 2 &&
-        data.wrong > data.correct
-      ) {
-
-        status =
-          "🔥 苦手";
-
-      }
-
-      else if (
-        data.correct > 0 ||
-        data.wrong > 0
-      ) {
-
-        status =
-          "📖 学習中";
-
-      }
-
-
       const div =
-        document.createElement("div");
+        document.createElement(
+          "div"
+        );
 
 
       div.className =
@@ -384,35 +562,53 @@
 
 
       div.innerHTML = `
-        <strong>${item.word}</strong>
 
-        <span>${item.meaning}</span>
+        <strong>
+          ${item.word}
+        </strong>
 
-        <span>${status}</span>
+        <span>
+          ${item.meaning}
+        </span>
+
+        <span>
+          ${masteryStars(data.streak)}
+        </span>
+
+        <span>
+          ${masteryText(data.streak)}
+        </span>
 
         <small>
-          正解 ${data.correct}回 /
-          不正解 ${data.wrong}回 /
-          連続 ${data.streak}回
+          ⭕ 正解 ${data.correct}回
+          /
+          ❌ 不正解 ${data.wrong}回
+          /
+          🔥 連続 ${data.streak}回
         </small>
+
       `;
 
 
-      wordList.appendChild(div);
+      wordList.appendChild(
+        div
+      );
 
     });
 
 
     // ==============================
-    // 苦手単語クイズ
+    // 苦手単語復習
     // ==============================
 
     function startWeakQuiz() {
 
-      if (weakWords.length === 0) {
+      if (
+        weakWords.length === 0
+      ) {
 
         alert(
-          "現在、苦手な単語はありません！"
+          "現在、要復習の単語はありません！"
         );
 
         return;
@@ -420,18 +616,6 @@
       }
 
 
-      // 苦手単語を保存
-      localStorage.setItem(
-        "weakQuizWords",
-        JSON.stringify(
-          weakWords.map(
-            item => item.word
-          )
-        )
-      );
-
-
-      // 単語ページへ移動
       window.location.href =
         "word.html?mode=weak";
 
@@ -439,5 +623,7 @@
 
   </script>
 
+
 </body>
+
 </html>
