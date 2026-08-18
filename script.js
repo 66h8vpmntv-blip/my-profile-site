@@ -3,31 +3,238 @@
 // ==============================
 
 const words = [
-  { word: "apple", meaning: "りんご" },
-  { word: "book", meaning: "本" },
-  { word: "school", meaning: "学校" },
-  { word: "teacher", meaning: "先生" },
-  { word: "friend", meaning: "友達" },
-  { word: "house", meaning: "家" },
-  { word: "water", meaning: "水" },
-  { word: "food", meaning: "食べ物" },
-  { word: "dog", meaning: "犬" },
-  { word: "cat", meaning: "猫" },
-  { word: "car", meaning: "車" },
-  { word: "sun", meaning: "太陽" },
-  { word: "moon", meaning: "月" },
-  { word: "morning", meaning: "朝" },
-  { word: "night", meaning: "夜" },
-  { word: "happy", meaning: "幸せな" },
-  { word: "big", meaning: "大きい" },
-  { word: "small", meaning: "小さい" },
-  { word: "beautiful", meaning: "美しい" },
-  { word: "important", meaning: "重要な" }
+
+  // ============================
+  // 🌱 中学レベル
+  // ============================
+
+  {
+    word: "apple",
+    meaning: "りんご",
+    level: "junior"
+  },
+
+  {
+    word: "book",
+    meaning: "本",
+    level: "junior"
+  },
+
+  {
+    word: "school",
+    meaning: "学校",
+    level: "junior"
+  },
+
+  {
+    word: "teacher",
+    meaning: "先生",
+    level: "junior"
+  },
+
+  {
+    word: "friend",
+    meaning: "友達",
+    level: "junior"
+  },
+
+  {
+    word: "house",
+    meaning: "家",
+    level: "junior"
+  },
+
+  {
+    word: "water",
+    meaning: "水",
+    level: "junior"
+  },
+
+  {
+    word: "food",
+    meaning: "食べ物",
+    level: "junior"
+  },
+
+
+  // ============================
+  // 📖 高校レベル
+  // ============================
+
+  {
+    word: "beautiful",
+    meaning: "美しい",
+    level: "high"
+  },
+
+  {
+    word: "important",
+    meaning: "重要な",
+    level: "high"
+  },
+
+  {
+    word: "necessary",
+    meaning: "必要な",
+    level: "high"
+  },
+
+  {
+    word: "environment",
+    meaning: "環境",
+    level: "high"
+  },
+
+  {
+    word: "experience",
+    meaning: "経験",
+    level: "high"
+  },
+
+
+  // ============================
+  // 🎯 TOEIC 400
+  // ============================
+
+  {
+    word: "meeting",
+    meaning: "会議",
+    level: "toeic400"
+  },
+
+  {
+    word: "office",
+    meaning: "会社・事務所",
+    level: "toeic400"
+  },
+
+  {
+    word: "customer",
+    meaning: "顧客",
+    level: "toeic400"
+  },
+
+  {
+    word: "schedule",
+    meaning: "予定",
+    level: "toeic400"
+  },
+
+  {
+    word: "employee",
+    meaning: "従業員",
+    level: "toeic400"
+  },
+
+
+  // ============================
+  // 🚀 TOEIC 500
+  // ============================
+
+  {
+    word: "available",
+    meaning: "利用できる",
+    level: "toeic500"
+  },
+
+  {
+    word: "purchase",
+    meaning: "購入する",
+    level: "toeic500"
+  },
+
+  {
+    word: "provide",
+    meaning: "提供する",
+    level: "toeic500"
+  },
+
+  {
+    word: "increase",
+    meaning: "増加する",
+    level: "toeic500"
+  },
+
+  {
+    word: "improve",
+    meaning: "改善する",
+    level: "toeic500"
+  },
+
+
+  // ============================
+  // 🔥 TOEIC 600
+  // ============================
+
+  {
+    word: "require",
+    meaning: "必要とする",
+    level: "toeic600"
+  },
+
+  {
+    word: "determine",
+    meaning: "決定する",
+    level: "toeic600"
+  },
+
+  {
+    word: "effective",
+    meaning: "効果的な",
+    level: "toeic600"
+  },
+
+  {
+    word: "additional",
+    meaning: "追加の",
+    level: "toeic600"
+  },
+
+  {
+    word: "responsible",
+    meaning: "責任がある",
+    level: "toeic600"
+  },
+
+
+  // ============================
+  // 💪 TOEIC 700
+  // ============================
+
+  {
+    word: "contribute",
+    meaning: "貢献する",
+    level: "toeic700"
+  },
+
+  {
+    word: "approximately",
+    meaning: "およそ",
+    level: "toeic700"
+  },
+
+  {
+    word: "acquire",
+    meaning: "習得する・獲得する",
+    level: "toeic700"
+  },
+
+  {
+    word: "considerable",
+    meaning: "かなりの",
+    level: "toeic700"
+  },
+
+  {
+    word: "implement",
+    meaning: "実施する",
+    level: "toeic700"
+  }
+
 ];
 
-
 // ==============================
-// 学習データ
+// 英単語データ
 // ==============================
 
 let studyData =
