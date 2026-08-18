@@ -1696,3 +1696,71 @@ footer a:hover {
   }
 
 }
+
+/* ==============================
+   レベル選択
+   ============================== */
+
+.level-section {
+  background: white;
+
+  padding: 20px;
+
+  margin: 20px auto;
+
+  max-width: 600px;
+
+  border-radius: 18px;
+
+  box-shadow:
+    0 4px 15px rgba(0,0,0,0.08);
+
+  text-align: center;
+}
+
+
+.level-section h2 {
+  margin-top: 0;
+}
+
+
+.level-buttons {
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, 1fr);
+
+  gap: 12px;
+}
+
+
+.level-buttons button {
+  min-height: 65px;
+
+  border: none;
+
+  border-radius: 14px;
+
+  background: #f2f2f2;
+
+  font-size: 16px;
+
+  font-weight: bold;
+
+  cursor: pointer;
+}
+
+
+.level-buttons button:active {
+  transform: scale(0.96);
+}
+
+
+@media (max-width: 600px) {
+
+  .level-buttons {
+    grid-template-columns:
+      1fr;
+  }
+
+}
