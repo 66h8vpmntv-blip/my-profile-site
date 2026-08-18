@@ -1056,3 +1056,184 @@ footer a:hover {
     }
 
 }
+
+
+/* ==============================
+   学習記録ページ
+   ============================== */
+
+.study-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+
+/* サマリー */
+
+.study-summary {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+
+.study-card {
+  background: white;
+  padding: 20px;
+  border-radius: 15px;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+
+.study-card h2 {
+  font-size: 16px;
+  margin-bottom: 10px;
+}
+
+
+.study-card p {
+  font-size: 28px;
+  font-weight: bold;
+}
+
+
+/* セクション */
+
+.weak-section,
+.all-section {
+  background: white;
+  padding: 20px;
+  margin-bottom: 25px;
+  border-radius: 15px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+
+.weak-section h2,
+.all-section h2 {
+  margin-top: 0;
+}
+
+
+/* 苦手単語 */
+
+.weak-word {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 15px;
+  margin: 10px 0;
+  background: #fff4f4;
+  border-radius: 10px;
+}
+
+
+.weak-word strong {
+  font-size: 20px;
+}
+
+
+.weak-word span {
+  color: #555;
+}
+
+
+.weak-word small {
+  color: #777;
+}
+
+
+/* 全単語 */
+
+.word-record {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5px;
+  padding: 15px 5px;
+  border-bottom: 1px solid #ddd;
+}
+
+
+.word-record strong {
+  font-size: 18px;
+}
+
+
+.word-record small {
+  grid-column: 1 / 3;
+  color: #777;
+}
+
+
+/* 復習ボタン */
+
+#weakQuizButton {
+  width: 100%;
+  padding: 15px;
+  margin-top: 15px;
+  border: none;
+  border-radius: 10px;
+  background: #ff6b6b;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+
+#weakQuizButton:hover {
+  opacity: 0.85;
+}
+
+
+/* HOMEボタン */
+
+.home-button {
+  display: block;
+  width: fit-content;
+  margin: 20px auto;
+  padding: 12px 20px;
+  background: #333;
+  color: white;
+  text-decoration: none;
+  border-radius: 10px;
+}
+
+
+/* スマホ対応 */
+
+@media (max-width: 600px) {
+
+  .study-summary {
+    grid-template-columns: 1fr 1fr;
+  }
+
+
+  .study-card {
+    padding: 15px 10px;
+  }
+
+
+  .study-card h2 {
+    font-size: 14px;
+  }
+
+
+  .study-card p {
+    font-size: 24px;
+  }
+
+
+  .word-record {
+    grid-template-columns: 1fr;
+  }
+
+
+  .word-record small {
+    grid-column: auto;
+  }
+
+}
