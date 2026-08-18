@@ -31,10 +31,13 @@ const words = [
 // ==============================
 
 let studyData =
-  JSON.parse(localStorage.getItem("wordStudyData")) || {};
+  JSON.parse(
+    localStorage.getItem("wordStudyData")
+  ) || {};
 
 
-// 記録がない単語には初期値を設定
+// 記録がない単語を初期化
+
 words.forEach(item => {
 
   if (!studyData[item.word]) {
@@ -50,9 +53,7 @@ words.forEach(item => {
 });
 
 
-// ==============================
-// 学習記録を保存
-// ==============================
+// 保存
 
 function saveStudyData() {
 
@@ -67,22 +68,6 @@ saveStudyData();
 
 
 // ==============================
-// 苦手度を計算
-// ==============================
-
-function getWeakness(item) {
-
-  const data = studyData[item.word];
-
-  return Math.max(
-    1,
-    data.wrong * 3 - data.streak + 1
-  );
-
-}
-
-
-// ==============================
 // クイズ設定
 // ==============================
 
@@ -93,21 +78,48 @@ let answered = false;
 
 
 // ==============================
-// クイズを作る
+// URLを確認
 // ==============================
 
-function createQuiz() {
+const urlParams =
+  new URLSearchParams(
+    window.location.search
+  );
+
+const quizMode =
+  urlParams.get("mode");
+
+
+// ==============================
+// 通常クイズを作る
+// ==============================
+
+function createNormalQuiz() {
 
   let pool = [];
 
 
   words.forEach(item => {
 
-    const weakness =
-      getWeakness(item);
+    const data =
+      studyData[item.word];
 
-    // 苦手な単語ほど多く入れる
-    for (let i = 0; i < weakness; i++) {
+    // 苦手度
+    const weakness =
+      Math.max(
+        1,
+        data.wrong * 3 -
+        data.streak +
+        1
+      );
+
+
+    // 苦手な単語ほど多く追加
+    for (
+      let i = 0;
+      i < weakness;
+      i++
+    ) {
 
       pool.push(item);
 
@@ -116,21 +128,20 @@ function createQuiz() {
   });
 
 
-  // シャッフル
   pool.sort(
     () => Math.random() - 0.5
   );
 
 
-  let selected = [];
+  const selected = [];
 
 
-  // 同じ単語が重複しないようにする
   for (const item of pool) {
 
     if (
       !selected.some(
-        word => word.word === item.word
+        word =>
+          word.word === item.word
       )
     ) {
 
@@ -138,15 +149,23 @@ function createQuiz() {
 
     }
 
-    if (selected.length >= 10) {
+
+    if (
+      selected.length >= 10
+    ) {
+
       break;
+
     }
 
   }
 
 
-  // 10問に足りない場合
-  if (selected.length < 10) {
+  // 10問に足りなければ追加
+
+  if (
+    selected.length < 10
+  ) {
 
     const remaining =
       words
@@ -160,6 +179,7 @@ function createQuiz() {
         .sort(
           () => Math.random() - 0.5
         );
+
 
     selected.push(
       ...remaining.slice(
@@ -177,13 +197,92 @@ function createQuiz() {
 
 
 // ==============================
+// 苦手単語クイズを作る
+// ==============================
+
+function createWeakQuiz() {
+
+  const weakWords =
+    words.filter(item => {
+
+      const data =
+        studyData[item.word];
+
+      return (
+        data.wrong >= 2 &&
+        data.wrong > data.correct
+      );
+
+    });
+
+
+  // 苦手単語がない場合
+
+  if (
+    weakWords.length === 0
+  ) {
+
+    return [];
+
+  }
+
+
+  // シャッフル
+
+  weakWords.sort(
+    () => Math.random() - 0.5
+  );
+
+
+  // 最大10問
+
+  return weakWords.slice(
+    0,
+    10
+  );
+
+}
+
+
+// ==============================
 // クイズ開始
 // ==============================
 
 function startQuiz() {
 
-  quizWords =
-    createQuiz();
+  // 苦手単語モード
+
+  if (
+    quizMode === "weak"
+  ) {
+
+    quizWords =
+      createWeakQuiz();
+
+  }
+
+  // 通常モード
+
+  else {
+
+    quizWords =
+      createNormalQuiz();
+
+  }
+
+
+  // 苦手単語がない場合
+
+  if (
+    quizWords.length === 0
+  ) {
+
+    showNoWeakWords();
+
+    return;
+
+  }
+
 
   currentQuestion = 0;
 
@@ -195,7 +294,44 @@ function startQuiz() {
 
 
 // ==============================
-// 問題を表示
+// 苦手単語がない場合
+// ==============================
+
+function showNoWeakWords() {
+
+  document.getElementById(
+    "word"
+  ).textContent =
+    "🎉 苦手単語はありません！";
+
+
+  document.getElementById(
+    "choices"
+  ).innerHTML = "";
+
+
+  document.getElementById(
+    "result"
+  ).textContent =
+    "すべての単語をよく覚えています！";
+
+
+  document.getElementById(
+    "progress"
+  ).textContent =
+    "CLEAR";
+
+
+  document.getElementById(
+    "nextButton"
+  ).style.display =
+    "none";
+
+}
+
+
+// ==============================
+// 問題表示
 // ==============================
 
 function showQuestion() {
@@ -207,38 +343,43 @@ function showQuestion() {
     quizWords[currentQuestion];
 
 
-  // 単語
-  document.getElementById("word").textContent =
+  document.getElementById(
+    "word"
+  ).textContent =
     question.word;
 
 
-  // 進行状況
-  document.getElementById("progress").textContent =
+  document.getElementById(
+    "progress"
+  ).textContent =
     `${currentQuestion + 1} / ${quizWords.length}`;
 
 
-  // 正解数
-  document.getElementById("correct").textContent =
+  document.getElementById(
+    "correct"
+  ).textContent =
     correctCount;
 
 
-  // 問題数
-  document.getElementById("total").textContent =
+  document.getElementById(
+    "total"
+  ).textContent =
     currentQuestion;
 
 
-  // 結果をリセット
-  document.getElementById("result").textContent =
-    "";
+  document.getElementById(
+    "result"
+  ).textContent = "";
 
 
-  // 次へボタンを隠す
-  document.getElementById("nextButton").style.display =
+  document.getElementById(
+    "nextButton"
+  ).style.display =
     "none";
 
 
   // ==============================
-  // 選択肢を作る
+  // 選択肢
   // ==============================
 
   let choices = [
@@ -254,7 +395,8 @@ function showQuestion() {
           question.meaning
       )
       .map(
-        item => item.meaning
+        item =>
+          item.meaning
       )
       .sort(
         () => Math.random() - 0.5
@@ -262,28 +404,33 @@ function showQuestion() {
 
 
   choices.push(
-    ...otherMeanings.slice(0, 3)
+    ...otherMeanings.slice(
+      0,
+      3
+    )
   );
 
 
-  // シャッフル
   choices.sort(
     () => Math.random() - 0.5
   );
 
 
   const choicesArea =
-    document.getElementById("choices");
+    document.getElementById(
+      "choices"
+    );
 
 
   choicesArea.innerHTML = "";
 
 
-  // ボタンを作る
   choices.forEach(choice => {
 
     const button =
-      document.createElement("button");
+      document.createElement(
+        "button"
+      );
 
 
     button.textContent =
@@ -311,7 +458,7 @@ function showQuestion() {
 
 
 // ==============================
-// 答えを判定
+// 答え判定
 // ==============================
 
 function answer(
@@ -319,7 +466,6 @@ function answer(
   correct
 ) {
 
-  // すでに回答していたら何もしない
   if (answered) return;
 
 
@@ -327,7 +473,9 @@ function answer(
 
 
   const result =
-    document.getElementById("result");
+    document.getElementById(
+      "result"
+    );
 
 
   const currentWord =
@@ -342,7 +490,9 @@ function answer(
   // 正解
   // ==============================
 
-  if (selected === correct) {
+  if (
+    selected === correct
+  ) {
 
     data.correct++;
 
@@ -383,22 +533,25 @@ function answer(
 
 
   // 保存
+
   saveStudyData();
 
 
-  // 正解数を更新
-  document.getElementById("correct").textContent =
+  // 表示更新
+
+  document.getElementById(
+    "correct"
+  ).textContent =
     correctCount;
 
 
-  // 問題数を更新
-  document.getElementById("total").textContent =
+  document.getElementById(
+    "total"
+  ).textContent =
     currentQuestion + 1;
 
 
-  // ==============================
-  // 選択肢を無効化
-  // ==============================
+  // ボタンを無効化
 
   const buttons =
     document.querySelectorAll(
@@ -413,8 +566,11 @@ function answer(
   });
 
 
-  // 次へボタン表示
-  document.getElementById("nextButton").style.display =
+  // 次へ
+
+  document.getElementById(
+    "nextButton"
+  ).style.display =
     "block";
 
 }
@@ -455,40 +611,52 @@ function finishQuiz() {
 
   const percentage =
     Math.round(
-      (correctCount /
-        quizWords.length) *
-      100
+      (
+        correctCount /
+        quizWords.length
+      ) * 100
     );
 
 
-  document.getElementById("word").textContent =
+  document.getElementById(
+    "word"
+  ).textContent =
     "🎉 終了！";
 
 
-  document.getElementById("choices").innerHTML =
-    "";
+  document.getElementById(
+    "choices"
+  ).innerHTML = "";
 
 
-  document.getElementById("result").textContent =
+  document.getElementById(
+    "result"
+  ).textContent =
     `${quizWords.length}問中 ${correctCount}問正解！`;
 
 
-  document.getElementById("progress").textContent =
+  document.getElementById(
+    "progress"
+  ).textContent =
     `${percentage}%`;
 
 
-  document.getElementById("total").textContent =
+  document.getElementById(
+    "total"
+  ).textContent =
     quizWords.length;
 
 
-  document.getElementById("nextButton").style.display =
+  document.getElementById(
+    "nextButton"
+  ).style.display =
     "none";
 
 }
 
 
 // ==============================
-// ページを開いたら開始
+// 開始
 // ==============================
 
 startQuiz();
