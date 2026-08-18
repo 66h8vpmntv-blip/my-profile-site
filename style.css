@@ -788,3 +788,271 @@ footer a:hover {
     }
 
 }
+
+
+/* =========================
+   DATE & WEATHER
+========================= */
+
+.weather-card {
+
+    width: min(90%, 700px);
+
+    margin: 50px auto;
+
+    padding: 40px 25px;
+
+    background: white;
+
+    border-radius: 25px;
+
+    box-shadow:
+        0 5px 25px
+        rgba(0, 0, 0, 0.10);
+
+    text-align: center;
+
+}
+
+
+.weather-card h1 {
+
+    font-size: 32px;
+
+    margin-bottom: 35px;
+
+}
+
+
+/* 日付 */
+
+.date-label,
+.small-label {
+
+    font-size: 12px;
+
+    color: #777;
+
+    letter-spacing: 2px;
+
+    margin-bottom: 8px;
+
+}
+
+
+.today-date {
+
+    font-size: 38px;
+
+    font-weight: bold;
+
+}
+
+
+.today-day {
+
+    font-size: 18px;
+
+    color: #4285f4;
+
+    margin-top: 5px;
+
+}
+
+
+/* 時刻 */
+
+.time-box {
+
+    margin-top: 30px;
+
+    padding: 20px;
+
+    background: #f8f9fa;
+
+    border-radius: 15px;
+
+}
+
+
+.current-time {
+
+    font-size: 36px;
+
+    font-weight: bold;
+
+    letter-spacing: 2px;
+
+}
+
+
+/* 天気 */
+
+.weather-section {
+
+    margin-top: 30px;
+
+    padding: 30px 15px;
+
+    border-radius: 20px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #e8f4ff,
+            #ffffff
+        );
+
+}
+
+
+.weather-icon {
+
+    font-size: 70px;
+
+}
+
+
+.weather-text {
+
+    font-size: 22px;
+
+    font-weight: bold;
+
+    margin-top: 10px;
+
+}
+
+
+.temperature {
+
+    font-size: 55px;
+
+    font-weight: bold;
+
+    margin-top: 10px;
+
+}
+
+
+/* 詳細 */
+
+.weather-details {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 15px;
+
+    margin-top: 25px;
+
+}
+
+
+.weather-detail {
+
+    padding: 18px 10px;
+
+    background: #f8f9fa;
+
+    border-radius: 12px;
+
+}
+
+
+.weather-detail span {
+
+    display: block;
+
+    font-size: 13px;
+
+    color: #777;
+
+    margin-bottom: 8px;
+
+}
+
+
+.weather-detail strong {
+
+    font-size: 16px;
+
+}
+
+
+/* 更新ボタン */
+
+.weather-button {
+
+    margin-top: 30px;
+
+    padding:
+        12px 22px;
+
+    border: none;
+
+    border-radius: 10px;
+
+    background: #4285f4;
+
+    color: white;
+
+    font-size: 15px;
+
+    cursor: pointer;
+
+}
+
+
+.weather-button:hover {
+
+    background: #3367d6;
+
+}
+
+
+/* スマホ */
+
+@media (max-width: 600px) {
+
+    .weather-card {
+
+        width: 92%;
+
+        padding: 30px 15px;
+
+        margin: 25px auto;
+
+    }
+
+
+    .today-date {
+
+        font-size: 30px;
+
+    }
+
+
+    .current-time {
+
+        font-size: 30px;
+
+    }
+
+
+    .temperature {
+
+        font-size: 48px;
+
+    }
+
+
+    .weather-details {
+
+        grid-template-columns: 1fr;
+
+    }
+
+}
