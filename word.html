@@ -129,5 +129,31 @@
 
   <script src="script.js"></script>
 
+  <script>
+
+  let selectedLevel =
+    localStorage.getItem(
+      "selectedWordLevel"
+    ) || "junior";
+
+
+  function selectLevel(level) {
+
+    selectedLevel = level;
+
+    localStorage.setItem(
+      "selectedWordLevel",
+      level
+    );
+
+    alert(
+      "レベルを変更しました！"
+    );
+
+    location.reload();
+
+  }
+
+</script>
 </body>
 </html>
