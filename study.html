@@ -23,9 +23,7 @@
 <body>
 
 
-  <!-- ==============================
-       WORD / STUDY タブ
-       ============================== -->
+  <!-- WORD / STUDY タブ -->
 
   <nav class="study-tabs">
 
@@ -51,7 +49,7 @@
     <h1>📊 学習記録</h1>
 
     <p>
-      単語の定着度を確認しよう！
+      単語の定着度と復習予定を確認しよう！
     </p>
 
   </header>
@@ -61,7 +59,42 @@
 
 
     <!-- ==============================
-         全体の記録
+         今日の復習
+         ============================== -->
+
+    <section class="today-review">
+
+      <h2>🔄 今日の復習</h2>
+
+      <div class="review-count">
+
+        <strong id="reviewCount">
+          0
+        </strong>
+
+        <span>
+          語
+        </span>
+
+      </div>
+
+      <p id="reviewMessage">
+        復習する単語を確認しています……
+      </p>
+
+
+      <button
+        id="reviewButton"
+        onclick="startReview()"
+      >
+        🔄 今日の復習を始める
+      </button>
+
+    </section>
+
+
+    <!-- ==============================
+         全体
          ============================== -->
 
     <section class="study-summary">
@@ -92,12 +125,8 @@
 
         <h2>⭐ 習得済み</h2>
 
-        <p>
-
-          <span id="masteredWords">
-            0
-          </span>
-
+        <p id="masteredWords">
+          0
         </p>
 
       </div>
@@ -107,12 +136,8 @@
 
         <h2>📖 学習中</h2>
 
-        <p>
-
-          <span id="learningWords">
-            0
-          </span>
-
+        <p id="learningWords">
+          0
         </p>
 
       </div>
@@ -122,12 +147,8 @@
 
         <h2>🔥 要復習</h2>
 
-        <p>
-
-          <span id="weakWords">
-            0
-          </span>
-
+        <p id="weakWords">
+          0
         </p>
 
       </div>
@@ -137,22 +158,24 @@
 
 
     <!-- ==============================
-         定着度の説明
+         復習ルール
          ============================== -->
 
     <section class="mastery-guide">
 
-      <h2>🧠 定着度</h2>
+      <h2>🧠 復習スケジュール</h2>
 
-      <p>🌱 ★☆☆☆☆　覚え始め</p>
+      <p>❌ 間違い → すぐ復習</p>
 
-      <p>📖 ★★☆☆☆　学習中</p>
+      <p>🌱 1回正解 → 10分後</p>
 
-      <p>👍 ★★★☆☆　だいぶ定着</p>
+      <p>📖 2回正解 → 1日後</p>
 
-      <p>💪 ★★★★☆　かなり定着</p>
+      <p>👍 3回正解 → 3日後</p>
 
-      <p>⭐ ★★★★★　習得</p>
+      <p>💪 4回正解 → 7日後</p>
+
+      <p>⭐ 5回以上 → 14日後</p>
 
     </section>
 
@@ -195,10 +218,6 @@
     </section>
 
 
-    <!-- ==============================
-         戻る
-         ============================== -->
-
     <a
       href="study-home.html"
       class="home-button"
@@ -218,9 +237,7 @@
   </main>
 
 
-  <!-- ==============================
-       学習データ読み込み
-       ============================== -->
+  <!-- 学習データ -->
 
   <script src="script.js"></script>
 
@@ -256,7 +273,7 @@
 
 
     // ==============================
-    // 保存されたデータ
+    // 保存データ
     // ==============================
 
     const savedData =
@@ -274,10 +291,7 @@
     function masteryStars(streak) {
 
       const level =
-        Math.min(
-          streak,
-          5
-        );
+        Math.min(streak, 5);
 
       return (
         "★".repeat(level) +
@@ -315,15 +329,136 @@
 
 
     // ==============================
+    // 復習期限
+    // ==============================
+
+    function isDue(data) {
+
+      if (!data.nextReview) {
+        return false;
+      }
+
+      return (
+        new Date(data.nextReview)
+          .getTime()
+        <= Date.now()
+      );
+
+    }
+
+
+    function reviewText(data) {
+
+      if (!data.nextReview) {
+        return "復習予定なし";
+      }
+
+
+      const time =
+        new Date(data.nextReview)
+          .getTime();
+
+
+      if (time <= Date.now()) {
+        return "🔥 今すぐ復習";
+      }
+
+
+      const diff =
+        time - Date.now();
+
+
+      const minutes =
+        Math.ceil(
+          diff / 60000
+        );
+
+
+      if (minutes < 60) {
+        return `⏰ ${minutes}分後`;
+      }
+
+
+      const hours =
+        Math.ceil(
+          minutes / 60
+        );
+
+
+      if (hours < 24) {
+        return `⏰ ${hours}時間後`;
+      }
+
+
+      const days =
+        Math.ceil(
+          hours / 24
+        );
+
+
+      return `📅 ${days}日後`;
+
+    }
+
+
+    // ==============================
+    // 今日の復習
+    // ==============================
+
+    const dueWords =
+      studyWords.filter(item => {
+
+        const data =
+          savedData[item.word];
+
+        return (
+          data &&
+          isDue(data)
+        );
+
+      });
+
+
+    document.getElementById(
+      "reviewCount"
+    ).textContent =
+      dueWords.length;
+
+
+    if (
+      dueWords.length === 0
+    ) {
+
+      document.getElementById(
+        "reviewMessage"
+      ).textContent =
+        "🎉 今すぐ復習する単語はありません！";
+
+
+      document.getElementById(
+        "reviewButton"
+      ).textContent =
+        "📖 WORDで学習する";
+
+    }
+
+    else {
+
+      document.getElementById(
+        "reviewMessage"
+      ).textContent =
+        "復習期限が来ている単語があります！";
+
+    }
+
+
+    // ==============================
     // 集計
     // ==============================
 
     let learned = 0;
-
     let mastered = 0;
-
     let learning = 0;
-
     let weak = 0;
 
 
@@ -333,11 +468,10 @@
         savedData[item.word] || {
           correct: 0,
           wrong: 0,
-          streak: 0
+          streak: 0,
+          nextReview: null
         };
 
-
-      // 学習済み
 
       if (
         data.correct > 0 ||
@@ -349,8 +483,6 @@
       }
 
 
-      // 習得
-
       if (
         data.streak >= 5
       ) {
@@ -358,9 +490,6 @@
         mastered++;
 
       }
-
-
-      // 苦手
 
       else if (
         data.wrong >= 2 &&
@@ -370,9 +499,6 @@
         weak++;
 
       }
-
-
-      // 学習中
 
       else if (
         data.correct > 0 ||
@@ -385,10 +511,6 @@
 
     });
 
-
-    // ==============================
-    // 数字表示
-    // ==============================
 
     document.getElementById(
       "learnedWords"
@@ -421,7 +543,7 @@
 
 
     // ==============================
-    // 苦手単語ランキング
+    // 苦手単語
     // ==============================
 
     const weakList =
@@ -431,34 +553,18 @@
 
 
     const weakWords =
-      studyWords
-        .filter(item => {
+      studyWords.filter(item => {
 
-          const data =
-            savedData[item.word];
+        const data =
+          savedData[item.word];
 
-          return (
-            data &&
-            data.wrong >= 2 &&
-            data.wrong > data.correct
-          );
+        return (
+          data &&
+          data.wrong >= 2 &&
+          data.wrong > data.correct
+        );
 
-        })
-        .sort((a, b) => {
-
-          const A =
-            savedData[a.word];
-
-          const B =
-            savedData[b.word];
-
-
-          return (
-            B.wrong -
-            A.wrong
-          );
-
-        });
+      });
 
 
     if (
@@ -466,67 +572,64 @@
     ) {
 
       weakList.innerHTML =
-        `
-        <p>
-          🎉 今のところ要復習の単語はありません！
-        </p>
-        `;
+        "<p>🎉 苦手単語はありません！</p>";
 
     }
 
     else {
 
-      weakWords.forEach(
-        (item, index) => {
+      weakWords.forEach(item => {
 
-          const data =
-            savedData[item.word];
-
-
-          const div =
-            document.createElement(
-              "div"
-            );
+        const data =
+          savedData[item.word];
 
 
-          div.className =
-            "weak-word";
-
-
-          div.innerHTML = `
-
-            <strong>
-              ${index + 1}.
-              ${item.word}
-            </strong>
-
-            <span>
-              ${item.meaning}
-            </span>
-
-            <span>
-              ${masteryStars(data.streak)}
-            </span>
-
-            <span>
-              ${masteryText(data.streak)}
-            </span>
-
-            <small>
-              ⭕ ${data.correct}回
-             　❌ ${data.wrong}回
-             　連続正解 ${data.streak}回
-            </small>
-
-          `;
-
-
-          weakList.appendChild(
-            div
+        const div =
+          document.createElement(
+            "div"
           );
 
-        }
-      );
+
+        div.className =
+          "weak-word";
+
+
+        div.innerHTML = `
+
+          <strong>
+            ${item.word}
+          </strong>
+
+          <span>
+            ${item.meaning}
+          </span>
+
+          <span>
+            ${masteryStars(data.streak)}
+          </span>
+
+          <span>
+            ${masteryText(data.streak)}
+          </span>
+
+          <small>
+            ⭕ ${data.correct}回
+            /
+            ❌ ${data.wrong}回
+            /
+            🔥 連続 ${data.streak}回
+          </small>
+
+          <small>
+            ${reviewText(data)}
+          </small>
+
+        `;
+
+
+        weakList.appendChild(div);
+
+      });
 
     }
 
@@ -547,7 +650,8 @@
         savedData[item.word] || {
           correct: 0,
           wrong: 0,
-          streak: 0
+          streak: 0,
+          nextReview: null
         };
 
 
@@ -580,21 +684,48 @@
         </span>
 
         <small>
-          ⭕ 正解 ${data.correct}回
+          ⭕ ${data.correct}回
           /
-          ❌ 不正解 ${data.wrong}回
+          ❌ ${data.wrong}回
           /
           🔥 連続 ${data.streak}回
+        </small>
+
+        <small>
+          ${reviewText(data)}
         </small>
 
       `;
 
 
-      wordList.appendChild(
-        div
-      );
+      wordList.appendChild(div);
 
     });
+
+
+    // ==============================
+    // 今日の復習開始
+    // ==============================
+
+    function startReview() {
+
+      if (
+        dueWords.length > 0
+      ) {
+
+        window.location.href =
+          "word.html?mode=review";
+
+      }
+
+      else {
+
+        window.location.href =
+          "word.html";
+
+      }
+
+    }
 
 
     // ==============================
@@ -608,7 +739,7 @@
       ) {
 
         alert(
-          "現在、要復習の単語はありません！"
+          "現在、苦手単語はありません！"
         );
 
         return;
