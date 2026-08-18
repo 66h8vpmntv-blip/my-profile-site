@@ -4,10 +4,7 @@
 
 const words = [
 
-  // ============================
   // 🌱 中学レベル
-  // ============================
-
   {
     word: "apple",
     meaning: "りんご",
@@ -57,10 +54,7 @@ const words = [
   },
 
 
-  // ============================
   // 📖 高校レベル
-  // ============================
-
   {
     word: "beautiful",
     meaning: "美しい",
@@ -92,10 +86,7 @@ const words = [
   },
 
 
-  // ============================
   // 🎯 TOEIC 400
-  // ============================
-
   {
     word: "meeting",
     meaning: "会議",
@@ -127,10 +118,7 @@ const words = [
   },
 
 
-  // ============================
   // 🚀 TOEIC 500
-  // ============================
-
   {
     word: "available",
     meaning: "利用できる",
@@ -162,10 +150,7 @@ const words = [
   },
 
 
-  // ============================
   // 🔥 TOEIC 600
-  // ============================
-
   {
     word: "require",
     meaning: "必要とする",
@@ -197,10 +182,7 @@ const words = [
   },
 
 
-  // ============================
   // 💪 TOEIC 700
-  // ============================
-
   {
     word: "contribute",
     meaning: "貢献する",
@@ -233,8 +215,9 @@ const words = [
 
 ];
 
+
 // ==============================
-// 英単語データ
+// 学習データ
 // ==============================
 
 let studyData =
@@ -244,7 +227,7 @@ let studyData =
 
 
 // ==============================
-// データの初期化
+// データ初期化
 // ==============================
 
 words.forEach(item => {
@@ -252,13 +235,19 @@ words.forEach(item => {
   if (!studyData[item.word]) {
 
     studyData[item.word] = {
+
       correct: 0,
+
       wrong: 0,
+
       streak: 0,
+
       nextReview: null
+
     };
 
   }
+
 
   // 古いデータにも対応
 
@@ -290,43 +279,146 @@ saveStudyData();
 
 
 // ==============================
+// 現在のレベル
+// ==============================
+
+const selectedLevel =
+  localStorage.getItem(
+    "selectedWordLevel"
+  ) || "junior";
+
+
+// ==============================
+// レベル名
+// ==============================
+
+function getLevelName() {
+
+  if (selectedLevel === "junior") {
+
+    return "🌱 中学レベル";
+
+  }
+
+  if (selectedLevel === "high") {
+
+    return "📖 高校レベル";
+
+  }
+
+  if (selectedLevel === "toeic400") {
+
+    return "🎯 TOEIC 400";
+
+  }
+
+  if (selectedLevel === "toeic500") {
+
+    return "🚀 TOEIC 500";
+
+  }
+
+  if (selectedLevel === "toeic600") {
+
+    return "🔥 TOEIC 600";
+
+  }
+
+  if (selectedLevel === "toeic700") {
+
+    return "💪 TOEIC 700";
+
+  }
+
+  return "🌱 中学レベル";
+
+}
+
+
+// ==============================
+// 選択したレベルの単語
+// ==============================
+
+function getLevelWords() {
+
+  return words.filter(item => {
+
+    return item.level === selectedLevel;
+
+  });
+
+}
+
+
+// ==============================
 // 復習間隔
 // ==============================
 
 function getReviewInterval(streak) {
 
   if (streak >= 5) {
-    return 14 * 24 * 60 * 60 * 1000;
+
+    return 14 *
+      24 *
+      60 *
+      60 *
+      1000;
+
   }
 
   if (streak === 4) {
-    return 7 * 24 * 60 * 60 * 1000;
+
+    return 7 *
+      24 *
+      60 *
+      60 *
+      1000;
+
   }
 
   if (streak === 3) {
-    return 3 * 24 * 60 * 60 * 1000;
+
+    return 3 *
+      24 *
+      60 *
+      60 *
+      1000;
+
   }
 
   if (streak === 2) {
-    return 24 * 60 * 60 * 1000;
+
+    return 24 *
+      60 *
+      60 *
+      1000;
+
   }
 
   if (streak === 1) {
-    return 10 * 60 * 1000;
+
+    return 10 *
+      60 *
+      1000;
+
   }
 
   return 0;
+
 }
 
 
 // ==============================
-// 次回復習日を設定
+// 次回復習日
 // ==============================
 
 function setNextReview(data) {
 
   const interval =
-    getReviewInterval(data.streak);
+    getReviewInterval(
+      data.streak
+    );
+
 
   data.nextReview =
     new Date(
@@ -337,76 +429,23 @@ function setNextReview(data) {
 
 
 // ==============================
-// 復習期限が来ているか
+// 復習期限
 // ==============================
 
 function isReviewDue(data) {
 
   if (!data.nextReview) {
+
     return false;
+
   }
+
 
   return (
-    new Date(data.nextReview).getTime()
+    new Date(data.nextReview)
+      .getTime()
     <= Date.now()
   );
-
-}
-
-
-// ==============================
-// 復習日時の表示
-// ==============================
-
-function getReviewText(data) {
-
-  if (!data.nextReview) {
-    return "まだ復習予定なし";
-  }
-
-  const reviewDate =
-    new Date(data.nextReview);
-
-  if (
-    reviewDate.getTime() <= Date.now()
-  ) {
-
-    return "🔥 今すぐ復習";
-
-  }
-
-  const diff =
-    reviewDate.getTime() -
-    Date.now();
-
-  const minutes =
-    Math.ceil(
-      diff / (60 * 1000)
-    );
-
-  if (minutes < 60) {
-
-    return `⏰ ${minutes}分後`;
-
-  }
-
-  const hours =
-    Math.ceil(
-      minutes / 60
-    );
-
-  if (hours < 24) {
-
-    return `⏰ ${hours}時間後`;
-
-  }
-
-  const days =
-    Math.ceil(
-      hours / 24
-    );
-
-  return `📅 ${days}日後`;
 
 }
 
@@ -415,20 +454,11 @@ function getReviewText(data) {
 // 定着度
 // ==============================
 
-function getMasteryLevel(streak) {
-
-  return Math.min(
-    streak,
-    5
-  );
-
-}
-
-
 function getMasteryStars(streak) {
 
   const level =
-    getMasteryLevel(streak);
+    Math.min(streak, 5);
+
 
   return (
     "★".repeat(level) +
@@ -441,23 +471,33 @@ function getMasteryStars(streak) {
 function getMasteryText(streak) {
 
   if (streak >= 5) {
+
     return "⭐ 習得";
+
   }
 
   if (streak === 4) {
+
     return "💪 かなり定着";
+
   }
 
   if (streak === 3) {
+
     return "👍 だいぶ定着";
+
   }
 
   if (streak === 2) {
+
     return "📖 学習中";
+
   }
 
   if (streak === 1) {
+
     return "🌱 覚え始め";
+
   }
 
   return "🔥 要復習";
@@ -466,13 +506,14 @@ function getMasteryText(streak) {
 
 
 // ==============================
-// URL
+// URLモード
 // ==============================
 
 const urlParams =
   new URLSearchParams(
     window.location.search
   );
+
 
 const quizMode =
   urlParams.get("mode");
@@ -492,44 +533,66 @@ let answered = false;
 
 
 // ==============================
-// 復習対象を取得
+// 復習クイズ
 // ==============================
 
 function createReviewQuiz() {
 
-  return words
+  const levelWords =
+    getLevelWords();
+
+
+  return levelWords
+
     .filter(item => {
 
       const data =
         studyData[item.word];
 
+
       return isReviewDue(data);
 
     })
-    .sort(() => Math.random() - 0.5)
+
+    .sort(
+      () =>
+        Math.random() - 0.5
+    )
+
     .slice(0, 10);
 
 }
 
 
 // ==============================
-// 苦手単語
+// 苦手クイズ
 // ==============================
 
 function createWeakQuiz() {
 
-  return words
+  const levelWords =
+    getLevelWords();
+
+
+  return levelWords
+
     .filter(item => {
 
       const data =
         studyData[item.word];
 
+
       return (
+
         data.wrong >= 2 &&
-        data.wrong > data.correct
+
+        data.wrong >
+        data.correct
+
       );
 
     })
+
     .sort((a, b) => {
 
       const A =
@@ -538,11 +601,13 @@ function createWeakQuiz() {
       const B =
         studyData[b.word];
 
+
       return (
         B.wrong - A.wrong
       );
 
     })
+
     .slice(0, 10);
 
 }
@@ -554,17 +619,23 @@ function createWeakQuiz() {
 
 function createNormalQuiz() {
 
+  const levelWords =
+    getLevelWords();
+
+
   let pool = [];
 
-  words.forEach(item => {
+
+  levelWords.forEach(item => {
 
     const data =
       studyData[item.word];
 
+
     let priority = 1;
 
 
-    // 復習期限が来た単語を最優先
+    // 復習期限
 
     if (
       isReviewDue(data)
@@ -575,11 +646,15 @@ function createNormalQuiz() {
     }
 
 
-    // 苦手単語
+    // 苦手
 
     if (
+
       data.wrong >= 2 &&
-      data.wrong > data.correct
+
+      data.wrong >
+      data.correct
+
     ) {
 
       priority += 5;
@@ -587,30 +662,49 @@ function createNormalQuiz() {
     }
 
 
-    // 定着していない単語
-
-    if (data.streak === 0) {
-      priority += 4;
-    }
-
-    else if (data.streak === 1) {
-      priority += 3;
-    }
-
-    else if (data.streak === 2) {
-      priority += 2;
-    }
-
-    else if (data.streak === 3) {
-      priority += 1;
-    }
-
-
-    // 習得済みは低頻度
+    // 定着していない
 
     if (
+      data.streak === 0
+    ) {
+
+      priority += 4;
+
+    }
+
+    else if (
+      data.streak === 1
+    ) {
+
+      priority += 3;
+
+    }
+
+    else if (
+      data.streak === 2
+    ) {
+
+      priority += 2;
+
+    }
+
+    else if (
+      data.streak === 3
+    ) {
+
+      priority += 1;
+
+    }
+
+
+    // 習得済み
+
+    if (
+
       data.streak >= 5 &&
+
       !isReviewDue(data)
+
     ) {
 
       priority = 1;
@@ -632,25 +726,32 @@ function createNormalQuiz() {
 
 
   pool.sort(
-    () => Math.random() - 0.5
+    () =>
+      Math.random() - 0.5
   );
 
 
   const selected = [];
 
 
-  for (const item of pool) {
+  for (
+    const item of pool
+  ) {
 
     if (
+
       !selected.some(
         x =>
-          x.word === item.word
+          x.word ===
+          item.word
       )
+
     ) {
 
       selected.push(item);
 
     }
+
 
     if (
       selected.length >= 10
@@ -704,7 +805,7 @@ function startQuiz() {
     quizWords.length === 0
   ) {
 
-    showNoReview();
+    showNoWords();
 
     return;
 
@@ -721,30 +822,34 @@ function startQuiz() {
 
 
 // ==============================
-// 復習対象なし
+// 問題なし
 // ==============================
 
-function showNoReview() {
+function showNoWords() {
 
   const word =
     document.getElementById(
       "word"
     );
 
+
   const choices =
     document.getElementById(
       "choices"
     );
+
 
   const result =
     document.getElementById(
       "result"
     );
 
+
   const progress =
     document.getElementById(
       "progress"
     );
+
 
   const next =
     document.getElementById(
@@ -755,9 +860,10 @@ function showNoReview() {
   if (word) {
 
     word.textContent =
-      "🎉 復習完了！";
+      "🎉 完了！";
 
   }
+
 
   if (choices) {
 
@@ -765,12 +871,14 @@ function showNoReview() {
 
   }
 
+
   if (result) {
 
     result.textContent =
-      "今すぐ復習する単語はありません！";
+      "対象の単語はありません！";
 
   }
+
 
   if (progress) {
 
@@ -778,6 +886,7 @@ function showNoReview() {
       "CLEAR";
 
   }
+
 
   if (next) {
 
@@ -800,6 +909,10 @@ function showQuestion() {
 
   const question =
     quizWords[currentQuestion];
+
+
+  const data =
+    studyData[question.word];
 
 
   document.getElementById(
@@ -828,7 +941,8 @@ function showQuestion() {
 
   document.getElementById(
     "result"
-  ).textContent = "";
+  ).textContent =
+    "";
 
 
   document.getElementById(
@@ -837,26 +951,37 @@ function showQuestion() {
     "none";
 
 
+  // ==============================
   // 選択肢
+  // ==============================
 
   let choices = [
+
     question.meaning
+
   ];
 
 
   const others =
-    words
-      .filter(
-        item =>
-          item.meaning !==
-          question.meaning
+
+    getLevelWords()
+
+      .filter(item =>
+
+        item.meaning !==
+        question.meaning
+
       )
-      .map(
-        item =>
-          item.meaning
+
+      .map(item =>
+
+        item.meaning
+
       )
+
       .sort(
-        () => Math.random() - 0.5
+        () =>
+          Math.random() - 0.5
       );
 
 
@@ -866,7 +991,8 @@ function showQuestion() {
 
 
   choices.sort(
-    () => Math.random() - 0.5
+    () =>
+      Math.random() - 0.5
   );
 
 
@@ -879,34 +1005,36 @@ function showQuestion() {
   area.innerHTML = "";
 
 
-  choices.forEach(choice => {
+  choices.forEach(
+    choice => {
 
-    const button =
-      document.createElement(
-        "button"
-      );
-
-
-    button.textContent =
-      choice;
-
-
-    button.onclick =
-      () => {
-
-        answer(
-          choice,
-          question.meaning
+      const button =
+        document.createElement(
+          "button"
         );
 
-      };
+
+      button.textContent =
+        choice;
 
 
-    area.appendChild(
-      button
-    );
+      button.onclick =
+        () => {
 
-  });
+          answer(
+            choice,
+            question.meaning
+          );
+
+        };
+
+
+      area.appendChild(
+        button
+      );
+
+    }
+  );
 
 }
 
@@ -920,17 +1048,26 @@ function answer(
   correct
 ) {
 
-  if (answered) return;
+  if (answered) {
+
+    return;
+
+  }
+
 
   answered = true;
 
 
   const currentWord =
-    quizWords[currentQuestion];
+    quizWords[
+      currentQuestion
+    ];
 
 
   const data =
-    studyData[currentWord.word];
+    studyData[
+      currentWord.word
+    ];
 
 
   const result =
@@ -954,13 +1091,15 @@ function answer(
     correctCount++;
 
 
-    // 正解したら次回復習を設定
-
     setNextReview(data);
 
 
     result.textContent =
-      `⭕ 正解！ ${getMasteryStars(data.streak)}`;
+
+      `⭕ 正解！
+       ${getMasteryStars(
+         data.streak
+       )}`;
 
 
     result.className =
@@ -980,14 +1119,16 @@ function answer(
     data.streak = 0;
 
 
-    // 間違えたらすぐ復習対象
+    // すぐ復習
 
     data.nextReview =
       new Date().toISOString();
 
 
     result.textContent =
-      `❌ 不正解…… 正解は「${correct}」`;
+
+      `❌ 不正解……
+       正解は「${correct}」`;
 
 
     result.className =
@@ -1014,14 +1155,19 @@ function answer(
   // ボタン無効化
 
   document
+
     .querySelectorAll(
       "#choices button"
     )
-    .forEach(button => {
 
-      button.disabled = true;
+    .forEach(
+      button => {
 
-    });
+        button.disabled =
+          true;
+
+      }
+    );
 
 
   document.getElementById(
@@ -1042,8 +1188,10 @@ function nextQuestion() {
 
 
   if (
+
     currentQuestion >=
     quizWords.length
+
   ) {
 
     finishQuiz();
@@ -1067,10 +1215,12 @@ function finishQuiz() {
 
   const percentage =
     Math.round(
+
       (
         correctCount /
         quizWords.length
       ) * 100
+
     );
 
 
@@ -1088,7 +1238,9 @@ function finishQuiz() {
   document.getElementById(
     "result"
   ).textContent =
-    `${quizWords.length}問中 ${correctCount}問正解！`;
+
+    `${quizWords.length}問中
+     ${correctCount}問正解！`;
 
 
   document.getElementById(
