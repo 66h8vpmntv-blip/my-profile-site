@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>英単語トレーニング</title>
+
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <header>
+    <h1>📚 英単語トレーニング</h1>
+  </header>
+
+  <main class="word-container">
+
+    <div class="word-info">
+      <span id="level">Lv.1 中学基礎</span>
+      <span id="progress">1 / 10</span>
+    </div>
+
+    <div class="word-card">
+
+      <p class="question-label">この単語の意味は？</p>
+
+      <h2 id="word">apple</h2>
+
+      <div id="choices">
+
+        <button onclick="answer(0)">りんご</button>
+
+        <button onclick="answer(1)">学校</button>
+
+        <button onclick="answer(2)">先生</button>
+
+        <button onclick="answer(3)">本</button>
+
+      </div>
+
+      <p id="result"></p>
+
+      <button id="nextButton" onclick="nextQuestion()" style="display:none;">
+        次の問題 →
+      </button>
+
+    </div>
+
+    <div class="score">
+      <p>正解：<span id="correct">0</span></p>
+      <p>問題数：<span id="total">0</span></p>
+    </div>
+
+  </main>
+
+  <script src="script.js"></script>
+
+</body>
+</html>
