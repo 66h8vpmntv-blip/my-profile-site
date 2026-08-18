@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>学習記録</title>
+
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+  <header>
+    <h1>📊 学習記録</h1>
+  </header>
+
+  <main class="study-container">
+
+    <!-- 全体の記録 -->
+
+    <section class="study-summary">
+
+      <div class="study-card">
+        <h2>📚 学習単語</h2>
+        <p>
+          <span id="learnedWords">0</span>
+          /
+          <span id="totalWords">0</span>
+        </p>
+      </div>
+
+      <div class="study-card">
+        <h2>⭐ 習得済み</h2>
+        <p>
+          <span id="masteredWords">0</span>
+        </p>
+      </div>
+
+      <div class="study-card">
+        <h2>📖 学習中</h2>
+        <p>
+          <span id="learningWords">0</span>
+        </p>
+      </div>
+
+      <div class="study-card">
+        <h2>🔥 苦手</h2>
+        <p>
+          <span id="weakWords">0</span>
+        </p>
+      </div>
+
+    </section>
+
+
+    <!-- 苦手単語 -->
+
+    <section class="weak-section">
+
+      <h2>🔥 苦手単語ランキング</h2>
+
+      <div id="weakList"></div>
+
+      <button
+        id="weakQuizButton"
+        onclick="startWeakQuiz()"
+      >
+        🔥 苦手単語を復習する
+      </button>
+
+    </section>
+
+
+    <!-- 学習状況 -->
+
+    <section class="all-section">
+
+      <h2>📖 単語一覧</h2>
+
+      <div id="wordList"></div>
+
+    </section>
+
+
+    <!-- HOMEへ -->
+
+    <a href="index.html" class="home-button">
+      🏠 HOMEに戻る
+    </a>
+
+  </main>
+
+
+  <script src="script.js"></script>
+
+  <script>
+
+    // ==============================
+    // 単語データ
+    // ==============================
+
+    const studyWords = [
+      { word: "apple", meaning: "りんご" },
+      { word: "book", meaning: "本" },
+      { word: "school", meaning: "学校" },
+      { word: "teacher", meaning: "先生" },
+      { word: "friend", meaning: "友達" },
+      { word: "house", meaning: "家" },
+      { word: "water", meaning: "水" },
+      { word: "food", meaning: "食べ物" },
+      { word: "dog", meaning: "犬" },
+      { word: "cat", meaning: "猫" },
+      { word: "car", meaning: "車" },
+      { word: "sun", meaning: "太陽" },
+      { word: "moon", meaning: "月" },
+      { word: "morning", meaning: "朝" },
+      { word: "night", meaning: "夜" },
+      { word: "happy", meaning: "幸せな" },
+      { word: "big", meaning: "大きい" },
+      { word: "small", meaning: "小さい" },
+      { word: "beautiful", meaning: "美しい" },
+      { word: "important", meaning: "重要な" }
+    ];
+
+
+    // ==============================
+    // 学習データ
+    // ==============================
+
+    const savedData =
+      JSON.parse(
+        localStorage.getItem("wordStudyData")
+      ) || {};
+
+
+    // ==============================
+    // 集計
+    // ==============================
+
+    let learned = 0;
+    let mastered = 0;
+    let learning = 0;
+    let weak = 0;
+
+
+    studyWords.forEach(item => {
+
+      const data =
+        savedData[item.word] || {
+          correct: 0,
+          wrong: 0,
+          streak: 0
+        };
+
+
+      // 一度でも正解・不正解したら学習済み
+      if (
+        data.correct > 0 ||
+        data.wrong > 0
+      ) {
+
+        learned++;
+
+      }
+
+
+      // 5回以上連続正解 → 習得
+      if (data.streak >= 5) {
+
+        mastered++;
+
+      }
+
+      // 間違いがある単語
+      else if (data.wrong > 0) {
+
+        learning++;
+
+      }
+
+      // 苦手判定
+      if (
+        data.wrong >= 2 &&
+        data.wrong > data.correct
+      ) {
+
+        weak++;
+
+      }
+
+    });
+
+
+    // ==============================
+    // 数字を表示
+    // ==============================
+
+    document.getElementById(
+      "learnedWords"
+    ).textContent = learned;
+
+
+    document.getElementById(
+      "totalWords"
+    ).textContent =
+      studyWords.length;
+
+
+    document.getElementById(
+      "masteredWords"
+    ).textContent = mastered;
+
+
+    document.getElementById(
+      "learningWords"
+    ).textContent = learning;
+
+
+    document.getElementById(
+      "weakWords"
+    ).textContent = weak;
+
+
+    // ==============================
+    // 苦手ランキング
+    // ==============================
+
+    const weakList =
+      document.getElementById(
+        "weakList"
+      );
+
+
+    const weakWords =
+      studyWords
+        .filter(item => {
+
+          const data =
+            savedData[item.word];
+
+          if (!data) return false;
+
+          return (
+            data.wrong >= 2 &&
+            data.wrong > data.correct
+          );
+
+        })
+        .sort((a, b) => {
+
+          const A =
+            savedData[a.word];
+
+          const B =
+            savedData[b.word];
+
+          return B.wrong - A.wrong;
+
+        });
+
+
+    if (weakWords.length === 0) {
+
+      weakList.innerHTML =
+        "<p>🎉 今のところ苦手な単語はありません！</p>";
+
+    }
+
+    else {
+
+      weakWords.forEach(
+        (item, index) => {
+
+          const data =
+            savedData[item.word];
+
+
+          const div =
+            document.createElement("div");
+
+
+          div.className =
+            "weak-word";
+
+
+          div.innerHTML = `
+            <strong>
+              ${index + 1}. ${item.word}
+            </strong>
+
+            <span>
+              ${item.meaning}
+            </span>
+
+            <small>
+              ⭕ ${data.correct}回
+             　❌ ${data.wrong}回
+             　🔥 連続${data.streak}回
+            </small>
+          `;
+
+
+          weakList.appendChild(div);
+
+        }
+      );
+
+    }
+
+
+    // ==============================
+    // 全単語一覧
+    // ==============================
+
+    const wordList =
+      document.getElementById(
+        "wordList"
+      );
+
+
+    studyWords.forEach(item => {
+
+      const data =
+        savedData[item.word] || {
+          correct: 0,
+          wrong: 0,
+          streak: 0
+        };
+
+
+      let status =
+        "🔵 未学習";
+
+
+      if (data.streak >= 5) {
+
+        status =
+          "⭐ 習得";
+
+      }
+
+      else if (
+        data.wrong >= 2 &&
+        data.wrong > data.correct
+      ) {
+
+        status =
+          "🔥 苦手";
+
+      }
+
+      else if (
+        data.correct > 0 ||
+        data.wrong > 0
+      ) {
+
+        status =
+          "📖 学習中";
+
+      }
+
+
+      const div =
+        document.createElement("div");
+
+
+      div.className =
+        "word-record";
+
+
+      div.innerHTML = `
+        <strong>${item.word}</strong>
+
+        <span>${item.meaning}</span>
+
+        <span>${status}</span>
+
+        <small>
+          正解 ${data.correct}回 /
+          不正解 ${data.wrong}回 /
+          連続 ${data.streak}回
+        </small>
+      `;
+
+
+      wordList.appendChild(div);
+
+    });
+
+
+    // ==============================
+    // 苦手単語クイズ
+    // ==============================
+
+    function startWeakQuiz() {
+
+      if (weakWords.length === 0) {
+
+        alert(
+          "現在、苦手な単語はありません！"
+        );
+
+        return;
+
+      }
+
+
+      // 苦手単語を保存
+      localStorage.setItem(
+        "weakQuizWords",
+        JSON.stringify(
+          weakWords.map(
+            item => item.word
+          )
+        )
+      );
+
+
+      // 単語ページへ移動
+      window.location.href =
+        "word.html?mode=weak";
+
+    }
+
+  </script>
+
+</body>
+</html>
