@@ -36,7 +36,9 @@ let studyData =
   ) || {};
 
 
-// 記録がない単語を初期化
+// ==============================
+// データの初期化
+// ==============================
 
 words.forEach(item => {
 
@@ -45,8 +47,19 @@ words.forEach(item => {
     studyData[item.word] = {
       correct: 0,
       wrong: 0,
-      streak: 0
+      streak: 0,
+      nextReview: null
     };
+
+  }
+
+  // 古いデータにも対応
+
+  if (
+    studyData[item.word].nextReview === undefined
+  ) {
+
+    studyData[item.word].nextReview = null;
 
   }
 
@@ -70,23 +83,153 @@ saveStudyData();
 
 
 // ==============================
-// 定着度を取得
+// 復習間隔
 // ==============================
 
-function getMasteryLevel(streak) {
+function getReviewInterval(streak) {
 
   if (streak >= 5) {
-    return 5;
+    return 14 * 24 * 60 * 60 * 1000;
   }
 
-  return streak;
+  if (streak === 4) {
+    return 7 * 24 * 60 * 60 * 1000;
+  }
+
+  if (streak === 3) {
+    return 3 * 24 * 60 * 60 * 1000;
+  }
+
+  if (streak === 2) {
+    return 24 * 60 * 60 * 1000;
+  }
+
+  if (streak === 1) {
+    return 10 * 60 * 1000;
+  }
+
+  return 0;
+}
+
+
+// ==============================
+// 次回復習日を設定
+// ==============================
+
+function setNextReview(data) {
+
+  const interval =
+    getReviewInterval(data.streak);
+
+  data.nextReview =
+    new Date(
+      Date.now() + interval
+    ).toISOString();
 
 }
 
 
 // ==============================
-// 定着度の名前
+// 復習期限が来ているか
 // ==============================
+
+function isReviewDue(data) {
+
+  if (!data.nextReview) {
+    return false;
+  }
+
+  return (
+    new Date(data.nextReview).getTime()
+    <= Date.now()
+  );
+
+}
+
+
+// ==============================
+// 復習日時の表示
+// ==============================
+
+function getReviewText(data) {
+
+  if (!data.nextReview) {
+    return "まだ復習予定なし";
+  }
+
+  const reviewDate =
+    new Date(data.nextReview);
+
+  if (
+    reviewDate.getTime() <= Date.now()
+  ) {
+
+    return "🔥 今すぐ復習";
+
+  }
+
+  const diff =
+    reviewDate.getTime() -
+    Date.now();
+
+  const minutes =
+    Math.ceil(
+      diff / (60 * 1000)
+    );
+
+  if (minutes < 60) {
+
+    return `⏰ ${minutes}分後`;
+
+  }
+
+  const hours =
+    Math.ceil(
+      minutes / 60
+    );
+
+  if (hours < 24) {
+
+    return `⏰ ${hours}時間後`;
+
+  }
+
+  const days =
+    Math.ceil(
+      hours / 24
+    );
+
+  return `📅 ${days}日後`;
+
+}
+
+
+// ==============================
+// 定着度
+// ==============================
+
+function getMasteryLevel(streak) {
+
+  return Math.min(
+    streak,
+    5
+  );
+
+}
+
+
+function getMasteryStars(streak) {
+
+  const level =
+    getMasteryLevel(streak);
+
+  return (
+    "★".repeat(level) +
+    "☆".repeat(5 - level)
+  );
+
+}
+
 
 function getMasteryText(streak) {
 
@@ -116,22 +259,7 @@ function getMasteryText(streak) {
 
 
 // ==============================
-// 定着度の★表示
-// ==============================
-
-function getMasteryStars(streak) {
-
-  const level =
-    getMasteryLevel(streak);
-
-  return "★".repeat(level) +
-         "☆".repeat(5 - level);
-
-}
-
-
-// ==============================
-// URLモード
+// URL
 // ==============================
 
 const urlParams =
@@ -144,35 +272,103 @@ const quizMode =
 
 
 // ==============================
-// クイズ設定
+// クイズ
 // ==============================
 
 let quizWords = [];
+
 let currentQuestion = 0;
+
 let correctCount = 0;
+
 let answered = false;
 
 
 // ==============================
+// 復習対象を取得
+// ==============================
+
+function createReviewQuiz() {
+
+  return words
+    .filter(item => {
+
+      const data =
+        studyData[item.word];
+
+      return isReviewDue(data);
+
+    })
+    .sort(() => Math.random() - 0.5)
+    .slice(0, 10);
+
+}
+
+
+// ==============================
+// 苦手単語
+// ==============================
+
+function createWeakQuiz() {
+
+  return words
+    .filter(item => {
+
+      const data =
+        studyData[item.word];
+
+      return (
+        data.wrong >= 2 &&
+        data.wrong > data.correct
+      );
+
+    })
+    .sort((a, b) => {
+
+      const A =
+        studyData[a.word];
+
+      const B =
+        studyData[b.word];
+
+      return (
+        B.wrong - A.wrong
+      );
+
+    })
+    .slice(0, 10);
+
+}
+
+
+// ==============================
 // 通常クイズ
-// 定着していない単語を優先
 // ==============================
 
 function createNormalQuiz() {
 
   let pool = [];
 
-
   words.forEach(item => {
 
     const data =
       studyData[item.word];
 
-
     let priority = 1;
 
 
-    // 苦手単語を最優先
+    // 復習期限が来た単語を最優先
+
+    if (
+      isReviewDue(data)
+    ) {
+
+      priority += 10;
+
+    }
+
+
+    // 苦手単語
 
     if (
       data.wrong >= 2 &&
@@ -184,36 +380,31 @@ function createNormalQuiz() {
     }
 
 
-    // 定着していないほど優先
+    // 定着していない単語
 
     if (data.streak === 0) {
-
       priority += 4;
-
     }
 
     else if (data.streak === 1) {
-
       priority += 3;
-
     }
 
     else if (data.streak === 2) {
-
       priority += 2;
-
     }
 
     else if (data.streak === 3) {
-
       priority += 1;
-
     }
 
 
-    // 習得済みは出題頻度を下げる
+    // 習得済みは低頻度
 
-    if (data.streak >= 5) {
+    if (
+      data.streak >= 5 &&
+      !isReviewDue(data)
+    ) {
 
       priority = 1;
 
@@ -245,15 +436,14 @@ function createNormalQuiz() {
 
     if (
       !selected.some(
-        word =>
-          word.word === item.word
+        x =>
+          x.word === item.word
       )
     ) {
 
       selected.push(item);
 
     }
-
 
     if (
       selected.length >= 10
@@ -266,82 +456,7 @@ function createNormalQuiz() {
   }
 
 
-  // 10問に足りない場合
-
-  if (
-    selected.length < 10
-  ) {
-
-    const remaining =
-      words
-        .filter(
-          item =>
-            !selected.some(
-              word =>
-                word.word === item.word
-            )
-        )
-        .sort(
-          () => Math.random() - 0.5
-        );
-
-
-    selected.push(
-      ...remaining.slice(
-        0,
-        10 - selected.length
-      )
-    );
-
-  }
-
-
   return selected;
-
-}
-
-
-// ==============================
-// 苦手単語クイズ
-// ==============================
-
-function createWeakQuiz() {
-
-  const weakWords =
-    words.filter(item => {
-
-      const data =
-        studyData[item.word];
-
-
-      return (
-        data.wrong >= 2 &&
-        data.wrong > data.correct
-      );
-
-    });
-
-
-  weakWords.sort((a, b) => {
-
-    const A =
-      studyData[a.word];
-
-    const B =
-      studyData[b.word];
-
-
-    return (
-      B.wrong - A.wrong
-    );
-
-  });
-
-
-  return weakWords.slice(
-    0,
-    10
-  );
 
 }
 
@@ -361,6 +476,15 @@ function startQuiz() {
 
   }
 
+  else if (
+    quizMode === "review"
+  ) {
+
+    quizWords =
+      createReviewQuiz();
+
+  }
+
   else {
 
     quizWords =
@@ -373,7 +497,7 @@ function startQuiz() {
     quizWords.length === 0
   ) {
 
-    showNoWeakWords();
+    showNoReview();
 
     return;
 
@@ -390,38 +514,70 @@ function startQuiz() {
 
 
 // ==============================
-// 苦手単語なし
+// 復習対象なし
 // ==============================
 
-function showNoWeakWords() {
+function showNoReview() {
 
-  document.getElementById(
-    "word"
-  ).textContent =
-    "🎉 苦手単語はありません！";
+  const word =
+    document.getElementById(
+      "word"
+    );
+
+  const choices =
+    document.getElementById(
+      "choices"
+    );
+
+  const result =
+    document.getElementById(
+      "result"
+    );
+
+  const progress =
+    document.getElementById(
+      "progress"
+    );
+
+  const next =
+    document.getElementById(
+      "nextButton"
+    );
 
 
-  document.getElementById(
-    "choices"
-  ).innerHTML = "";
+  if (word) {
 
+    word.textContent =
+      "🎉 復習完了！";
 
-  document.getElementById(
-    "result"
-  ).textContent =
-    "すべての単語をよく覚えています！";
+  }
 
+  if (choices) {
 
-  document.getElementById(
-    "progress"
-  ).textContent =
-    "CLEAR";
+    choices.innerHTML = "";
 
+  }
 
-  document.getElementById(
-    "nextButton"
-  ).style.display =
-    "none";
+  if (result) {
+
+    result.textContent =
+      "今すぐ復習する単語はありません！";
+
+  }
+
+  if (progress) {
+
+    progress.textContent =
+      "CLEAR";
+
+  }
+
+  if (next) {
+
+    next.style.display =
+      "none";
+
+  }
 
 }
 
@@ -437,10 +593,6 @@ function showQuestion() {
 
   const question =
     quizWords[currentQuestion];
-
-
-  const data =
-    studyData[question.word];
 
 
   document.getElementById(
@@ -478,16 +630,14 @@ function showQuestion() {
     "none";
 
 
-  // ==============================
   // 選択肢
-  // ==============================
 
   let choices = [
     question.meaning
   ];
 
 
-  const otherMeanings =
+  const others =
     words
       .filter(
         item =>
@@ -504,10 +654,7 @@ function showQuestion() {
 
 
   choices.push(
-    ...otherMeanings.slice(
-      0,
-      3
-    )
+    ...others.slice(0, 3)
   );
 
 
@@ -516,13 +663,13 @@ function showQuestion() {
   );
 
 
-  const choicesArea =
+  const area =
     document.getElementById(
       "choices"
     );
 
 
-  choicesArea.innerHTML = "";
+  area.innerHTML = "";
 
 
   choices.forEach(choice => {
@@ -538,7 +685,7 @@ function showQuestion() {
 
 
     button.onclick =
-      function() {
+      () => {
 
         answer(
           choice,
@@ -548,7 +695,7 @@ function showQuestion() {
       };
 
 
-    choicesArea.appendChild(
+    area.appendChild(
       button
     );
 
@@ -558,7 +705,7 @@ function showQuestion() {
 
 
 // ==============================
-// 答え判定
+// 回答
 // ==============================
 
 function answer(
@@ -568,14 +715,7 @@ function answer(
 
   if (answered) return;
 
-
   answered = true;
-
-
-  const result =
-    document.getElementById(
-      "result"
-    );
 
 
   const currentWord =
@@ -584,6 +724,12 @@ function answer(
 
   const data =
     studyData[currentWord.word];
+
+
+  const result =
+    document.getElementById(
+      "result"
+    );
 
 
   // ==============================
@@ -599,6 +745,11 @@ function answer(
     data.streak++;
 
     correctCount++;
+
+
+    // 正解したら次回復習を設定
+
+    setNextReview(data);
 
 
     result.textContent =
@@ -622,6 +773,12 @@ function answer(
     data.streak = 0;
 
 
+    // 間違えたらすぐ復習対象
+
+    data.nextReview =
+      new Date().toISOString();
+
+
     result.textContent =
       `❌ 不正解…… 正解は「${correct}」`;
 
@@ -632,12 +789,8 @@ function answer(
   }
 
 
-  // 保存
-
   saveStudyData();
 
-
-  // 表示
 
   document.getElementById(
     "correct"
@@ -651,22 +804,18 @@ function answer(
     currentQuestion + 1;
 
 
-  // 選択肢を無効化
+  // ボタン無効化
 
-  const buttons =
-    document.querySelectorAll(
+  document
+    .querySelectorAll(
       "#choices button"
-    );
+    )
+    .forEach(button => {
 
+      button.disabled = true;
 
-  buttons.forEach(button => {
+    });
 
-    button.disabled = true;
-
-  });
-
-
-  // 次へ
 
   document.getElementById(
     "nextButton"
