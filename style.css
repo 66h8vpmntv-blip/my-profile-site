@@ -1603,3 +1603,96 @@ footer a:hover {
   }
 
 }
+
+
+/* ==============================
+   今日の復習
+   ============================== */
+
+.today-review {
+  background: white;
+
+  padding: 25px;
+
+  margin-bottom: 25px;
+
+  border-radius: 18px;
+
+  text-align: center;
+
+  box-shadow:
+    0 4px 15px rgba(0,0,0,0.08);
+}
+
+
+.today-review h2 {
+  margin-top: 0;
+}
+
+
+.review-count {
+  margin: 15px 0;
+}
+
+
+.review-count strong {
+  font-size: 48px;
+}
+
+
+.review-count span {
+  font-size: 20px;
+}
+
+
+.today-review button {
+  width: 100%;
+
+  min-height: 60px;
+
+  padding: 15px;
+
+  margin-top: 10px;
+
+  border: none;
+
+  border-radius: 14px;
+
+  background: #333;
+
+  color: white;
+
+  font-size: 17px;
+
+  font-weight: bold;
+}
+
+
+.today-review button:active {
+  transform: scale(0.97);
+}
+
+
+/* 復習日時 */
+
+.weak-word small,
+.word-record small {
+  display: block;
+
+  margin-top: 3px;
+}
+
+
+/* スマホ */
+
+@media (max-width: 600px) {
+
+  .today-review {
+    padding: 20px;
+  }
+
+  .review-count strong {
+    font-size: 42px;
+  }
+
+}
