@@ -1509,3 +1509,97 @@ footer a:hover {
   }
 
 }
+
+
+/* ==============================
+   定着度表示
+   ============================== */
+
+.mastery-guide {
+  background: white;
+  padding: 20px;
+  margin-bottom: 25px;
+  border-radius: 15px;
+
+  box-shadow:
+    0 4px 12px rgba(0,0,0,0.08);
+}
+
+.mastery-guide h2 {
+  margin-top: 0;
+}
+
+.mastery-guide p {
+  margin: 8px 0;
+}
+
+
+/* ==============================
+   単語記録
+   ============================== */
+
+.word-record {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  padding: 16px 5px;
+
+  border-bottom: 1px solid #ddd;
+}
+
+.word-record strong {
+  font-size: 20px;
+}
+
+.word-record span {
+  color: #555;
+}
+
+.word-record small {
+  color: #777;
+}
+
+
+/* ==============================
+   苦手単語
+   ============================== */
+
+.weak-word {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  padding: 16px;
+
+  margin: 10px 0;
+
+  background: #fff4f4;
+
+  border-radius: 12px;
+}
+
+.weak-word strong {
+  font-size: 20px;
+}
+
+.weak-word small {
+  color: #777;
+}
+
+
+/* ==============================
+   スマホ
+   ============================== */
+
+@media (max-width: 600px) {
+
+  .mastery-guide {
+    padding: 16px;
+  }
+
+  .word-record {
+    padding: 15px 3px;
+  }
+
+}
