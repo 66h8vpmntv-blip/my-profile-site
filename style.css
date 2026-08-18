@@ -1237,3 +1237,99 @@ footer a:hover {
   }
 
 }
+
+
+/* ==============================
+   英単語学習 HOME
+   ============================== */
+
+.learning-home {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 30px 20px;
+}
+
+
+/* WORD・STUDYボタン */
+
+.learning-menu {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+
+  padding: 25px;
+  margin-bottom: 20px;
+
+  background: white;
+
+  border-radius: 18px;
+
+  text-decoration: none;
+  color: #333;
+
+  box-shadow:
+    0 5px 15px rgba(0, 0, 0, 0.1);
+
+  transition: 0.2s;
+}
+
+
+.learning-menu:hover {
+  transform: translateY(-3px);
+}
+
+
+/* アイコン */
+
+.learning-icon {
+  font-size: 45px;
+}
+
+
+/* タイトル */
+
+.learning-menu h2 {
+  margin: 0 0 5px;
+}
+
+
+.learning-menu p {
+  margin: 0;
+  color: #777;
+}
+
+
+/* 元のHOME */
+
+.learning-home-button {
+  display: block;
+
+  width: fit-content;
+
+  margin: 35px auto 0;
+
+  padding: 12px 25px;
+
+  background: #333;
+
+  color: white;
+
+  text-decoration: none;
+
+  border-radius: 12px;
+}
+
+
+/* スマホ */
+
+@media (max-width: 600px) {
+
+  .learning-menu {
+    padding: 20px;
+  }
+
+  .learning-icon {
+    font-size: 38px;
+  }
+
+}
